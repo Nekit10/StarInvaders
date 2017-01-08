@@ -1,5 +1,6 @@
 package com.nekitsgames.starinvaders;
 
+import android.graphics.Bitmap;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -8,6 +9,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -115,6 +117,11 @@ public class StarInvaders extends ApplicationAdapter {
 		lastBigAsteroidTime = TimeUtils.nanoTime();
 	}
 
+
+	private void die() {
+		Gdx.app.exit();
+	}
+
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -158,6 +165,8 @@ public class StarInvaders extends ApplicationAdapter {
 			asteroidRect.y -= ASTEROID_SMALL_STEP * Gdx.graphics.getDeltaTime();
 			if (asteroidRect.y + ASTEROID_SMALL_HEIGHT < 0)
 				iterator.remove();
+			if (asteroidRect.overlaps(shipRect))
+				die();
 		}
 
 		if (TimeUtils.nanoTime() - lastBigAsteroidTime > ASTEROID_BIG_SPAWN_AFTER)
@@ -169,12 +178,14 @@ public class StarInvaders extends ApplicationAdapter {
 			asteroidRect.y -= ASTEROID_BIG_STEP * Gdx.graphics.getDeltaTime();
 			if (asteroidRect.y + ASTEROID_BIG_HEIGHT < 0)
 				iterator.remove();
+			if (asteroidRect.overlaps(shipRect))
+				die();
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
 		    Gdx.app.exit();
 	}
-	
+
 	@Override
 	public void dispose () {
 		batch.dispose();
