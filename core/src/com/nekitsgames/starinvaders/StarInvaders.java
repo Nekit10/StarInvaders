@@ -1,6 +1,5 @@
 package com.nekitsgames.starinvaders;
 
-import android.graphics.Bitmap;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -9,7 +8,6 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -27,15 +25,18 @@ public class StarInvaders extends ApplicationAdapter {
 	private Texture shipImage;
 	private Texture asteroidSmallIMage;
 	private Texture asteroidBigImage;
+	private Texture lazerImage;
 	private Sound lazerSound;
 	private Music spaceSound;
 
 	private Rectangle shipRect;
-	private Rectangle asteroidRect;
+	private Rectangle rect;
 	private Array<Rectangle> smallAsteroidRects;
 	private long lastSmallAsteroidTime;
 	private Array<Rectangle> bigAsteroidRects;
 	private long lastBigAsteroidTime;
+	private Array<Rectangle> lazerRects;
+	private long lastLazer;
 
 	private Vector3 touchPos;
 	private Iterator<Rectangle> iterator;
@@ -61,7 +62,12 @@ public class StarInvaders extends ApplicationAdapter {
 	private static final int ASTEROID_BIG_HEIGHT = 56;
 
 	private static final int ASTEROID_BIG_STEP = 300;
-	private static final long ASTEROID_BIG_SPAWN_AFTER = 1000000000;
+	private static final long ASTEROID_BIG_SPAWN_AFTER = 1000000000L;
+
+	private static final int LAZER_WIDTH = 25;
+	private static final int LAZER_HEIGHT = 40;
+	private static final int LAZER_STEP = 500;
+	private static final int LAZER_WAIT_TIME = 100000000;
 
 	@Override
 	public void create () {
@@ -72,11 +78,12 @@ public class StarInvaders extends ApplicationAdapter {
 
 		touchPos = new Vector3();
 
-		asteroidRect = new Rectangle();
+		rect = new Rectangle();
 
 		shipImage = new Texture("ship.png");
 		asteroidSmallIMage = new Texture("asteroid_small.png");
 		asteroidBigImage = new Texture("asteroid_big.png");
+		lazerImage = new Texture("lazer.png");
 
 		lazerSound = Gdx.audio.newSound(Gdx.files.internal("lazer_sound.wav"));
 		spaceSound = Gdx.audio.newMusic(Gdx.files.internal("space_sound.mp3"));
@@ -95,26 +102,39 @@ public class StarInvaders extends ApplicationAdapter {
 
 		bigAsteroidRects = new Array<Rectangle>();
 		spawnBigAsteroid();
+
+		lazerRects = new Array<Rectangle>();
 	}
 
 	private void spawnSmallAsteroid() {
-		asteroidRect = new Rectangle();
-		asteroidRect.x = MathUtils.random(0, WIDTH - ASTEROID_SMALL_WIDTH);
-		asteroidRect.y = HEIGHT - 60;
-		asteroidRect.width = ASTEROID_SMALL_WIDTH;
-		asteroidRect.height = ASTEROID_SMALL_HEIGHT;
-		smallAsteroidRects.add(asteroidRect);
+		rect = new Rectangle();
+		rect.x = MathUtils.random(0, WIDTH - ASTEROID_SMALL_WIDTH);
+		rect.y = HEIGHT - 60;
+		rect.width = ASTEROID_SMALL_WIDTH;
+		rect.height = ASTEROID_SMALL_HEIGHT;
+		smallAsteroidRects.add(rect);
 		lastSmallAsteroidTime = TimeUtils.nanoTime();
 	}
 
 	private void spawnBigAsteroid() {
-		asteroidRect = new Rectangle();
-		asteroidRect.x = MathUtils.random(0, WIDTH - ASTEROID_BIG_WIDTH);
-		asteroidRect.y = HEIGHT - 60;
-		asteroidRect.width = ASTEROID_BIG_WIDTH;
-		asteroidRect.height = ASTEROID_BIG_HEIGHT;
-		bigAsteroidRects.add(asteroidRect);
+		rect = new Rectangle();
+		rect.x = MathUtils.random(0, WIDTH - ASTEROID_BIG_WIDTH);
+		rect.y = HEIGHT - 60;
+		rect.width = ASTEROID_BIG_WIDTH;
+		rect.height = ASTEROID_BIG_HEIGHT;
+		bigAsteroidRects.add(rect);
 		lastBigAsteroidTime = TimeUtils.nanoTime();
+	}
+
+	private void spawnLazer(float x, float y) {
+		rect = new Rectangle();
+		rect.x = x;
+		rect.y = y;
+		rect.width = LAZER_WIDTH;
+		rect.height = LAZER_HEIGHT;
+		lazerRects.add(rect);
+		lastLazer = TimeUtils.nanoTime();
+		lazerSound.play();
 	}
 
 
@@ -137,6 +157,8 @@ public class StarInvaders extends ApplicationAdapter {
 			batch.draw(asteroidSmallIMage, smallAsteroidRect.x, smallAsteroidRect.y);
 		for (Rectangle bigAsteroidRect: bigAsteroidRects)
 			batch.draw(asteroidBigImage, bigAsteroidRect.x, bigAsteroidRect.y);
+		for (Rectangle lazerRect: lazerRects)
+			batch.draw(lazerImage, lazerRect.x, lazerRect.y);
 		batch.end();
 
 		if (Gdx.input.isTouched()) {
@@ -161,11 +183,11 @@ public class StarInvaders extends ApplicationAdapter {
 
 		iterator = smallAsteroidRects.iterator();
 		while (iterator.hasNext()) {
-			asteroidRect = iterator.next();
-			asteroidRect.y -= ASTEROID_SMALL_STEP * Gdx.graphics.getDeltaTime();
-			if (asteroidRect.y + ASTEROID_SMALL_HEIGHT < 0)
+			rect = iterator.next();
+			rect.y -= ASTEROID_SMALL_STEP * Gdx.graphics.getDeltaTime();
+			if (rect.y + ASTEROID_SMALL_HEIGHT < 0)
 				iterator.remove();
-			if (asteroidRect.overlaps(shipRect))
+			if (rect.overlaps(shipRect))
 				die();
 		}
 
@@ -174,12 +196,35 @@ public class StarInvaders extends ApplicationAdapter {
 
 		iterator = bigAsteroidRects.iterator();
 		while (iterator.hasNext()) {
-			asteroidRect = iterator.next();
-			asteroidRect.y -= ASTEROID_BIG_STEP * Gdx.graphics.getDeltaTime();
-			if (asteroidRect.y + ASTEROID_BIG_HEIGHT < 0)
+			rect = iterator.next();
+			rect.y -= ASTEROID_BIG_STEP * Gdx.graphics.getDeltaTime();
+			if (rect.y + ASTEROID_BIG_HEIGHT < 0)
 				iterator.remove();
-			if (asteroidRect.overlaps(shipRect))
+			if (rect.overlaps(shipRect))
 				die();
+		}
+
+		if (Gdx.input.isKeyPressed(Input.Keys.SPACE) & TimeUtils.nanoTime() - lastLazer > LAZER_WAIT_TIME)
+			spawnLazer(shipRect.x + SHIP_WIDTH / 2, shipRect.y + SHIP_HEIGHT);
+
+		iterator = lazerRects.iterator();
+		while (iterator.hasNext()) {
+			rect = iterator.next();
+			rect.y += LAZER_STEP * Gdx.graphics.getDeltaTime();
+			if (rect.y + ASTEROID_BIG_HEIGHT > HEIGHT)
+				iterator.remove();
+
+			for (int i = 0; i < smallAsteroidRects.size; i++)
+				if (rect.overlaps(smallAsteroidRects.get(i))) {
+					iterator.remove();
+					smallAsteroidRects.removeIndex(i);
+				}
+
+			for (int i = 0; i < bigAsteroidRects.size; i++)
+				if (rect.overlaps(bigAsteroidRects.get(i))) {
+					iterator.remove();
+					bigAsteroidRects.removeIndex(i);
+				}
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
