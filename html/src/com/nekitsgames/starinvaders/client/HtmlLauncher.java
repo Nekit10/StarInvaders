@@ -9,7 +9,7 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public GwtApplicationConfiguration getConfig () {
-                return new GwtApplicationConfiguration(1920, 1080);
+                return new GwtApplicationConfiguration(StarInvaders.WIDTH, StarInvaders.HEIGHT);
         }
 
         @Override

@@ -9,8 +9,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
+
+import java.util.Iterator;
 
 public class StarInvaders extends ApplicationAdapter {
 
@@ -24,19 +29,38 @@ public class StarInvaders extends ApplicationAdapter {
 	private Music spaceSound;
 
 	private Rectangle shipRect;
+	private Rectangle asteroidRect;
+	private Array<Rectangle> smallAsteroidRects;
+	private long lastSmallAsteroidTime;
+	private Array<Rectangle> bigAsteroidRects;
+	private long lastBigAsteroidTime;
+
 	private Vector3 touchPos;
+	private Iterator<Rectangle> iterator;
 
-	private static final int WIDTH = 1920;
-	private static final int HEIGHT = 1080;
+	public static final int WIDTH = 1920;
+	public static final int HEIGHT = 1080;
 
-	private static final int SHIP_WIDTH = 320;
-	private static final int SHIP_HEIGHT = 320;
+	private static final int SHIP_WIDTH = 183;
+	private static final int SHIP_HEIGHT = 183;
 	private static final int SHIP_X = WIDTH / 2 - SHIP_WIDTH / 2;
 	private static final int SHIP_Y = 60;
 
 	private static final int SHIP_ONE_STEP_TOUCH = 5;
 	private static final int SHIP_ONE_STEP_KEY = 300;
-	
+
+	private static final int ASTEROID_SMALL_WIDTH = 28;
+	private static final int ASTEROID_SMALL_HEIGHT = 28;
+
+	private static final int ASTEROID_SMALL_STEP = 400;
+	private static final long ASTEROID_SMALL_SPAWN_AFTER = 199999999L;
+
+	private static final int ASTEROID_BIG_WIDTH = 56;
+	private static final int ASTEROID_BIG_HEIGHT = 56;
+
+	private static final int ASTEROID_BIG_STEP = 300;
+	private static final long ASTEROID_BIG_SPAWN_AFTER = 1000000000;
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -45,6 +69,8 @@ public class StarInvaders extends ApplicationAdapter {
 		camera.setToOrtho(false, 1920, 1080);
 
 		touchPos = new Vector3();
+
+		asteroidRect = new Rectangle();
 
 		shipImage = new Texture("ship.png");
 		asteroidSmallIMage = new Texture("asteroid_small.png");
@@ -62,6 +88,31 @@ public class StarInvaders extends ApplicationAdapter {
 		shipRect.width = SHIP_WIDTH;
 		shipRect.height = SHIP_HEIGHT;
 
+		smallAsteroidRects = new Array<Rectangle>();
+		spawnSmallAsteroid();
+
+		bigAsteroidRects = new Array<Rectangle>();
+		spawnBigAsteroid();
+	}
+
+	private void spawnSmallAsteroid() {
+		asteroidRect = new Rectangle();
+		asteroidRect.x = MathUtils.random(0, WIDTH - ASTEROID_SMALL_WIDTH);
+		asteroidRect.y = HEIGHT - 60;
+		asteroidRect.width = ASTEROID_SMALL_WIDTH;
+		asteroidRect.height = ASTEROID_SMALL_HEIGHT;
+		smallAsteroidRects.add(asteroidRect);
+		lastSmallAsteroidTime = TimeUtils.nanoTime();
+	}
+
+	private void spawnBigAsteroid() {
+		asteroidRect = new Rectangle();
+		asteroidRect.x = MathUtils.random(0, WIDTH - ASTEROID_BIG_WIDTH);
+		asteroidRect.y = HEIGHT - 60;
+		asteroidRect.width = ASTEROID_BIG_WIDTH;
+		asteroidRect.height = ASTEROID_BIG_HEIGHT;
+		bigAsteroidRects.add(asteroidRect);
+		lastBigAsteroidTime = TimeUtils.nanoTime();
 	}
 
 	@Override
@@ -75,6 +126,10 @@ public class StarInvaders extends ApplicationAdapter {
 
 		batch.begin();
 		batch.draw(shipImage, shipRect.x, shipRect.y);
+		for (Rectangle smallAsteroidRect: smallAsteroidRects)
+			batch.draw(asteroidSmallIMage, smallAsteroidRect.x, smallAsteroidRect.y);
+		for (Rectangle bigAsteroidRect: bigAsteroidRects)
+			batch.draw(asteroidBigImage, bigAsteroidRect.x, bigAsteroidRect.y);
 		batch.end();
 
 		if (Gdx.input.isTouched()) {
@@ -89,6 +144,33 @@ public class StarInvaders extends ApplicationAdapter {
 			shipRect.x -= SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
 		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
 			shipRect.x += SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
+		if (shipRect.x > WIDTH - SHIP_WIDTH)
+			shipRect.x = WIDTH - SHIP_WIDTH;
+		if (shipRect.x < 0)
+			shipRect.x = 0;
+
+		if (TimeUtils.nanoTime() - lastSmallAsteroidTime > ASTEROID_SMALL_SPAWN_AFTER)
+			spawnSmallAsteroid();
+
+		iterator = smallAsteroidRects.iterator();
+		while (iterator.hasNext()) {
+			asteroidRect = iterator.next();
+			asteroidRect.y -= ASTEROID_SMALL_STEP * Gdx.graphics.getDeltaTime();
+			if (asteroidRect.y + ASTEROID_SMALL_HEIGHT < 0)
+				iterator.remove();
+		}
+
+		if (TimeUtils.nanoTime() - lastBigAsteroidTime > ASTEROID_BIG_SPAWN_AFTER)
+			spawnBigAsteroid();
+
+		iterator = bigAsteroidRects.iterator();
+		while (iterator.hasNext()) {
+			asteroidRect = iterator.next();
+			asteroidRect.y -= ASTEROID_BIG_STEP * Gdx.graphics.getDeltaTime();
+			if (asteroidRect.y + ASTEROID_BIG_HEIGHT < 0)
+				iterator.remove();
+		}
+
 		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
 		    Gdx.app.exit();
 	}
