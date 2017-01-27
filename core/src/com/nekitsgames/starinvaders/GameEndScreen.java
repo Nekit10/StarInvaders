@@ -70,9 +70,6 @@ public class GameEndScreen implements Screen {
             game.batch.draw(slectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
         game.batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            Gdx.app.exit();
-        }
         if (TimeUtils.nanoTime() - lastMenuChange > 300000000) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 pos++;
@@ -89,7 +86,7 @@ public class GameEndScreen implements Screen {
         if (pos > 1)
             pos = 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
             switch (pos) {
                 case 0:
                     game.setScreen(new MainGameScreen(game));
