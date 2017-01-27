@@ -145,7 +145,8 @@ public class MainGameScreen implements Screen {
 
 
 	private void die() {
-		Gdx.app.exit();
+		game.setScreen(new GameEndScreen(game));
+		dispose();
 	}
 
 	@Override
