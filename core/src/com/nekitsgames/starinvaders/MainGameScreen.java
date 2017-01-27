@@ -86,13 +86,13 @@ public class MainGameScreen implements Screen {
 
 		rect = new Rectangle();
 
-		shipImage = new Texture("images/ship.png");
-		asteroidSmallIMage = new Texture("images/asteroid_small.png");
-		asteroidBigImage = new Texture("images/asteroid_big.png");
-		lazerImage = new Texture("images/lazer.png");
+		shipImage = new Texture("assets/images/ship.png");
+		asteroidSmallIMage = new Texture("assets/images/asteroid_small.png");
+		asteroidBigImage = new Texture("assets/images/asteroid_big.png");
+		lazerImage = new Texture("assets/images/lazer.png");
 
-		lazerSound = Gdx.audio.newSound(Gdx.files.internal("sound/lazer_sound.wav"));
-		spaceSound = Gdx.audio.newMusic(Gdx.files.internal("sound/space_sound.mp3"));
+		lazerSound = Gdx.audio.newSound(Gdx.files.internal("assets/sound/lazer_sound.wav"));
+		spaceSound = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/space_sound.mp3"));
 
 		spaceSound.setLooping(true);
 		spaceSound.play();

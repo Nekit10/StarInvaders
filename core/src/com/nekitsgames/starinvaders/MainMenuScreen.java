@@ -3,6 +3,7 @@ package com.nekitsgames.starinvaders;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -17,6 +18,7 @@ public class MainMenuScreen implements Screen {
     private GlyphLayout glyphLayout;
 
     private Texture slectedImage;
+    private Music menuMusic;
 
     private static final String label = "Star Invaders II";
 
@@ -42,7 +44,11 @@ public class MainMenuScreen implements Screen {
         glyphLayout = new GlyphLayout(game.fontMain, label);
         labelPos = new Rectangle();
 
-        slectedImage = new Texture("images/selected.png");
+        slectedImage = new Texture("assets/images/selected.png");
+        menuMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/menu_sound.mp3"));
+
+        menuMusic.setLooping(true);
+        menuMusic.play();
 
         labelPos.x = (int) ((MainGameScreen.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = MainGameScreen.HEIGHT - 200;

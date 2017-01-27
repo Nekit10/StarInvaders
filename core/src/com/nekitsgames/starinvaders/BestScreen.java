@@ -39,7 +39,7 @@ public class BestScreen implements Screen {
         glyphLayout = new GlyphLayout(game.fontMain, label);
         labelPos = new Rectangle();
 
-        slectedImage = new Texture("images/selected.png");
+        slectedImage = new Texture("assets/images/selected.png");
 
         labelPos.x = (int) ((MainGameScreen.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = MainGameScreen.HEIGHT - 200;
