@@ -235,7 +235,7 @@ public class MainGameScreen implements Screen {
 		}
 
 		if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-		    Gdx.app.exit();
+			game.setScreen(new PauseScreen(game, this));
 	}
 
 	@Override
