@@ -17,7 +17,7 @@ public class MainMenuScreen implements Screen {
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
 
-    private Texture slectedImage;
+    private Texture selectedImage;
     private Music menuMusic;
 
     private static final String label = "Star Invaders II";
@@ -44,7 +44,7 @@ public class MainMenuScreen implements Screen {
         glyphLayout = new GlyphLayout(game.fontMain, label);
         labelPos = new Rectangle();
 
-        slectedImage = new Texture("assets/images/selected.png");
+        selectedImage = new Texture("assets/images/selected.png");
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("assets/sound/menu_sound.mp3"));
 
         menuMusic.setLooping(true);
@@ -75,7 +75,7 @@ public class MainMenuScreen implements Screen {
             for (int i = 0; i < menuLables.length; i++)
                 game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * 128);
 
-            game.batch.draw(slectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
+            game.batch.draw(selectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
         game.batch.end();
 
         if (TimeUtils.nanoTime() - lastMenuChange > 300000000) {

@@ -16,7 +16,7 @@ public class BestScreen implements Screen {
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
 
-    private Texture slectedImage;
+    private Texture selectedImage;
 
     private static final String label = "Best Results";
 
@@ -39,7 +39,7 @@ public class BestScreen implements Screen {
         glyphLayout = new GlyphLayout(game.fontMain, label);
         labelPos = new Rectangle();
 
-        slectedImage = new Texture("assets/images/selected.png");
+        selectedImage = new Texture("assets/images/selected.png");
 
         labelPos.x = (int) ((MainGameScreen.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = MainGameScreen.HEIGHT - 200;
@@ -66,7 +66,7 @@ public class BestScreen implements Screen {
             for (int i = 0; i < menuLables.length; i++)
                 game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * 128);
 
-            game.batch.draw(slectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
+            game.batch.draw(selectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {

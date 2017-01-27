@@ -74,11 +74,6 @@ public class MainGameScreen implements Screen {
 	public MainGameScreen (StarInvaders game) {
 		this.game = game;
 
-		String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-		if ((OS.indexOf("mac") >= 0) || (OS.indexOf("darwin") >= 0)) {
-			//TODO
-		}
-
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1920, 1080);
 
