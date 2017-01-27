@@ -25,4 +25,4 @@ Star Invaders - простая игра. Я делаю Star Invaders как пр
 
 Права на lazer.png и selected.png принадлежат мне (Никиста Серба)
 
-Права на pdark.ttf и zorque.ttf
+Права на pdark.ttf и zorque.ttf http://www.1001fonts.com/
