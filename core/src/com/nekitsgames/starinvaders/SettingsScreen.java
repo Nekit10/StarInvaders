@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class MainMenuScreen implements Screen {
+public class SettingsScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
@@ -18,13 +18,10 @@ public class MainMenuScreen implements Screen {
 
     private Texture slectedImage;
 
-    private static final String label = "Star Invaders II";
+    private static final String label = "Settings";
 
     private static final String[] menuLables = {
-            "Game",
-            "Options",
-            "Results",
-            "Quit"
+            "Soon..."
     };
 
     private static int menuLabelsX;
@@ -34,7 +31,7 @@ public class MainMenuScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
-    public MainMenuScreen(StarInvaders game) {
+    public SettingsScreen(StarInvaders game) {
         this.game = game;
 
         camera = new OrthographicCamera();
@@ -47,7 +44,7 @@ public class MainMenuScreen implements Screen {
         labelPos.x = (int) ((MainGameScreen.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = MainGameScreen.HEIGHT - 200;
 
-        menuLabelsX = (int) (MainGameScreen.WIDTH / 2 - glyphLayout.width / 2 + 300);
+        menuLabelsX = (int) (MainGameScreen.WIDTH / 2 - glyphLayout.width / 2 + 100);
     }
 
     @Override
@@ -72,6 +69,9 @@ public class MainMenuScreen implements Screen {
             game.batch.draw(slectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
         game.batch.end();
 
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            game.setScreen(new MainMenuScreen(game));
+        }
         if (TimeUtils.nanoTime() - lastMenuChange > 300000000) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 pos++;
@@ -85,26 +85,11 @@ public class MainMenuScreen implements Screen {
 
         if (pos < 0)
             pos = 0;
-        if (pos > 3)
-            pos = 3;
+        if (pos > 0)
+            pos = 0;
 
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
             switch (pos) {
-                case 0:
-                    game.setScreen(new MainGameScreen(game));
-                break;
-
-                case 1:
-                    game.setScreen(new SettingsScreen(game));
-                break;
-
-                case 2:
-                    game.setScreen(new BestScreen(game));
-                break;
-
-                case 3:
-                    Gdx.app.exit();
-                break;
             }
     }
 
