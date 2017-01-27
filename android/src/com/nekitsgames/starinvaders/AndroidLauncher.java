@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.nekitsgames.starinvaders.StarInvaders;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override
@@ -15,6 +14,6 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useCompass = false;
 		config.hideStatusBar = true;
 		config.useGyroscope = false;
-		initialize(new StarInvaders(), config);
+		//initialize(new MainGameScreen(), config);
 	}
 }
