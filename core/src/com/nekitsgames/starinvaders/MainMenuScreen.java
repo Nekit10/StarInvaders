@@ -98,6 +98,7 @@ public class MainMenuScreen implements Screen {
             switch (pos) {
                 case 0:
                     game.setScreen(new MainGameScreen(game));
+                    dispose();
                 break;
 
                 case 1:
