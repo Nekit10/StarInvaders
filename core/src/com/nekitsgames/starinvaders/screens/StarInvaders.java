@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders;
+package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;

@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders;
+package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class GameEndScreen implements Screen {
+public class SettingsScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
@@ -18,11 +18,10 @@ public class GameEndScreen implements Screen {
 
     private Texture slectedImage;
 
-    private static final String label = "You died!";
+    private static final String label = "Settings";
 
     private static final String[] menuLables = {
-            "Restart",
-            "Quit"
+            "Soon..."
     };
 
     private static int menuLabelsX;
@@ -32,7 +31,7 @@ public class GameEndScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
-    public GameEndScreen(StarInvaders game) {
+    public SettingsScreen(StarInvaders game) {
         this.game = game;
 
         camera = new OrthographicCamera();
@@ -70,6 +69,9 @@ public class GameEndScreen implements Screen {
             game.batch.draw(slectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
         game.batch.end();
 
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+            game.setScreen(new MainMenuScreen(game));
+        }
         if (TimeUtils.nanoTime() - lastMenuChange > 300000000) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 pos++;
@@ -83,18 +85,11 @@ public class GameEndScreen implements Screen {
 
         if (pos < 0)
             pos = 0;
-        if (pos > 1)
-            pos = 1;
+        if (pos > 0)
+            pos = 0;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
             switch (pos) {
-                case 0:
-                    game.setScreen(new MainGameScreen(game));
-                break;
-
-                case 1:
-                    Gdx.app.exit();
-                break;
             }
     }
 

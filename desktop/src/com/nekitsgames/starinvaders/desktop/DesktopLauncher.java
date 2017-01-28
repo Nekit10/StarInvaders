@@ -2,8 +2,8 @@ package com.nekitsgames.starinvaders.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.nekitsgames.starinvaders.MainGameScreen;
-import com.nekitsgames.starinvaders.StarInvaders;
+import com.nekitsgames.starinvaders.screens.MainGameScreen;
+import com.nekitsgames.starinvaders.screens.StarInvaders;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {

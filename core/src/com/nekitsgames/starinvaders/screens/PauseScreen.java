@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders;
+package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -10,18 +10,20 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 
-public class BestScreen implements Screen {
+public class PauseScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
+    private MainGameScreen mainGameScreen;
 
-    private Texture selectedImage;
+    private Texture slectedImage;
 
-    private static final String label = "Best Results";
+    private static final String label = "Pause";
 
     private static final String[] menuLables = {
-            "Soon..."
+            "Resume",
+            "Quit"
     };
 
     private static int menuLabelsX;
@@ -31,20 +33,21 @@ public class BestScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
-    public BestScreen(StarInvaders game) {
+    public PauseScreen(StarInvaders game, MainGameScreen mainGameScreen) {
         this.game = game;
+        this.mainGameScreen = mainGameScreen;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, MainGameScreen.WIDTH, MainGameScreen.HEIGHT);
         glyphLayout = new GlyphLayout(game.fontMain, label);
         labelPos = new Rectangle();
 
-        selectedImage = new Texture("assets/images/selected.png");
+        slectedImage = new Texture("assets/images/selected.png");
 
         labelPos.x = (int) ((MainGameScreen.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = MainGameScreen.HEIGHT - 200;
 
-        menuLabelsX = (int) (MainGameScreen.WIDTH / 2 - glyphLayout.width / 2 + 200);
+        menuLabelsX = (int) (MainGameScreen.WIDTH / 2 - glyphLayout.width / 2 + 50);
     }
 
     @Override
@@ -66,12 +69,10 @@ public class BestScreen implements Screen {
             for (int i = 0; i < menuLables.length; i++)
                 game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * 128);
 
-            game.batch.draw(selectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
+            game.batch.draw(slectedImage, menuLabelsX - 60, labelPos.y - (pos + 1) * 128 - 32, 20, 20);
         game.batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-            game.setScreen(new MainMenuScreen(game));
-        }
+
         if (TimeUtils.nanoTime() - lastMenuChange > 300000000) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 pos++;
@@ -85,11 +86,18 @@ public class BestScreen implements Screen {
 
         if (pos < 0)
             pos = 0;
-        if (pos > 0)
+        if (pos > 1)
             pos = 0;
 
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
             switch (pos) {
+                case 0:
+                    game.setScreen(mainGameScreen);
+                    break;
+
+                case 1:
+                    Gdx.app.exit();
+                    break;
             }
     }
 
