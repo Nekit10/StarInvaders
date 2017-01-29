@@ -1,6 +1,7 @@
 package com.nekitsgames.starinvaders.API.settingsApi;
 
 import com.nekitsgames.starinvaders.API.SysAPI;
+import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -12,9 +13,13 @@ import java.util.Scanner;
 public class SettingsSystem {
 
     private String name;
+    private LogSystem log;
 
-    public SettingsSystem(String name) throws IOException {
+    public SettingsSystem(String name, LogSystem log) throws IOException {
         this.name = SysAPI.getSettingsFolder() + name + ".json";
+        this.log = log;
+
+        log.Log("Initializing SettingsAPI, file name: " + name, LogSystem.INFO);
     }
 
     public void setProperty (String key, Object value) throws IOException {
@@ -34,6 +39,7 @@ public class SettingsSystem {
         try {
             return new JSONObject(new Scanner(new File(name)).useDelimiter("\\Z").next());
         } catch (FileNotFoundException e) {
+            log.Log("No settings file! Creating new...", LogSystem.INFO);
             return new JSONObject();
         }
     }
@@ -46,6 +52,15 @@ public class SettingsSystem {
         PrintWriter printer = new PrintWriter(name);
         printer.println(obj.toString());
         printer.close();
+
+        printer = null;
+        file = null;
+    }
+
+    public void dispose () {
+        log.Log("Disposing SettingsSystem", LogSystem.INFO);
+        log.dispose();
+        log = null;
     }
 
 }
