@@ -12,7 +12,6 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -101,7 +100,7 @@ public class SettingsScreen implements Screen {
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
         for (int i = 0; i < menuLables.length; i++)
-            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * menuElementStep);
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
         game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
         game.batch.end();
@@ -116,7 +115,6 @@ public class SettingsScreen implements Screen {
                 lastMenuChange = TimeUtils.nanoTime();
             }
         }
-
 
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))

@@ -26,12 +26,13 @@ public class LogSystem {
         Log("Initializing LogAPI", INFO);
     }
 
-    public void Log (String msg, String type) {
+    public void Log(String msg, String type) {
         DateFormat dateFormat = new SimpleDateFormat(prop.getProperty("data.format"));
         Date date = new Date();
         String logStr = "{" + dateFormat.format(date) + "}[" + type + "] " + msg;
         if (type == ERROR)
-            System.err.println(logStr); else
+            System.err.println(logStr);
+        else
             System.out.println(logStr);
         printer.println(logStr);
 
@@ -40,8 +41,7 @@ public class LogSystem {
     }
 
 
-
-    public void dispose () {
+    public void dispose() {
         Log("Disposing LogAPI", INFO);
         printer.close();
         printer = null;

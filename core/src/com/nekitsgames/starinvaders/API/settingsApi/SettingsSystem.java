@@ -22,20 +22,21 @@ public class SettingsSystem {
         log.Log("Initializing SettingsAPI, file name: " + name, LogSystem.INFO);
     }
 
-    public void setProperty (String key, Object value) throws IOException {
+    public void setProperty(String key, Object value) throws IOException {
         JSONObject jsonObject = readJSONObject();
         jsonObject.put(key, value);
         saveJsonObject(jsonObject);
     }
 
-    public Object get (String key, String def) {
+    public Object get(String key, String def) {
         JSONObject jsonObject = readJSONObject();
         if (!jsonObject.isNull(key))
-            return jsonObject.get(key); else
+            return jsonObject.get(key);
+        else
             return def;
     }
 
-    private JSONObject readJSONObject ()  {
+    private JSONObject readJSONObject() {
         try {
             return new JSONObject(new Scanner(new File(name)).useDelimiter("\\Z").next());
         } catch (FileNotFoundException e) {
@@ -57,7 +58,7 @@ public class SettingsSystem {
         file = null;
     }
 
-    public void dispose () {
+    public void dispose() {
         log.Log("Disposing SettingsSystem", LogSystem.INFO);
         log.dispose();
         log = null;

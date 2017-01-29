@@ -98,7 +98,7 @@ public class PauseScreen implements Screen {
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
         for (int i = 0; i < menuLables.length; i++)
-            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * menuElementStep);
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
         game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
         game.batch.end();

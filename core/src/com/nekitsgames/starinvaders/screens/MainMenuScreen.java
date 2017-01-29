@@ -11,10 +11,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import sun.rmi.runtime.Log;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -104,12 +102,12 @@ public class MainMenuScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-            game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
+        game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
-            for (int i = 0; i < menuLables.length; i++)
-                game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * menuElementStep);
+        for (int i = 0; i < menuLables.length; i++)
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
-            game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
+        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
         game.batch.end();
 
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
@@ -138,7 +136,7 @@ public class MainMenuScreen implements Screen {
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
                     }
                     dispose();
-                break;
+                    break;
 
                 case 1:
                     try {
@@ -160,7 +158,7 @@ public class MainMenuScreen implements Screen {
 
                 case 3:
                     Gdx.app.exit();
-                break;
+                    break;
             }
     }
 

@@ -4,8 +4,8 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class Asteroid {
 
-        private AsteroidType type;
-        private Rectangle rect;
+    private AsteroidType type;
+    private Rectangle rect;
 
     public Asteroid(AsteroidType type, int x, int y) {
         this.type = type;
