@@ -82,7 +82,7 @@ public class MainGameScreen implements Screen {
         LAZER_WIDTH = Integer.parseInt(prop.getProperty("amunition.1.width"));
         LAZER_HEIGHT = Integer.parseInt(prop.getProperty("amunition.1.height"));
         LAZER_STEP = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("amunition.1.step")));
-        LAZER_WAIT_TIME = Long.parseLong(prop.getProperty("amunition.1.wait_time"));
+        LAZER_WAIT_TIME = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("amunition.1.wait_time")));
         LAZER_FILE = prop.getProperty("amunition.1.texture");
         LAZER_SOUND = prop.getProperty("amunition.1.sound");
 
@@ -130,11 +130,12 @@ public class MainGameScreen implements Screen {
                     Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".width")),
                     Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".height")),
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".step")),
-                    Long.parseLong(prop.getProperty("asteroid." + (i + 1) + ".spawn_after")),
+                    Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".spawn_after")),
                     prop.getProperty("asteroid." + (i + 1) + ".texture"),
                     0,
                     image_path,
-                    game.HEIGHT
+                    game.HEIGHT,
+                    game.WIDTH
             );
         }
 
