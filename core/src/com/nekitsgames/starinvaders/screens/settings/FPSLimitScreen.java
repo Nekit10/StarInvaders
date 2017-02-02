@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders.screens;
+package com.nekitsgames.starinvaders.screens.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -10,23 +10,27 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
+import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
+import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class SettingsScreen implements Screen {
+public class FPSLimitScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
+    private SettingsSystem settings;
 
     private Texture selectedImage;
 
     private static String label;
 
     private static String[] menuLables;
+    private Rectangle selectedRect;
 
     private static int menuLabelsX;
     private static double menuLabelXAdd;
@@ -46,20 +50,28 @@ public class SettingsScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private MainMenuScreen menu;
+    private SettingsScreen menu;
+    private long login;
 
-    public SettingsScreen(StarInvaders game, MainMenuScreen menu) throws IOException {
+    private int selectedX, selectedY;
+    private int selectedMarginRight;
+
+    public FPSLimitScreen(StarInvaders game, SettingsScreen menu) throws IOException {
         this.menu = menu;
 
-        game.log.Log("Initializing settings screen", LogSystem.INFO);
+        game.log.Log("Initializing FPS limit select screen", LogSystem.INFO);
+
+        settings = new SettingsSystem("main", game.log);
+
+        selectedRect = new Rectangle();
 
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings.us.properties"));
+        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("settings.label");
-        menuLables = prop.getProperty("settings.elements").split(";");
+        label = prop.getProperty("settings.fps.limit.label");
+        menuLables = prop.getProperty("settings.fps.limit.elements").split(";");
 
-        prop.load(new FileInputStream("properties/settings.properties"));
+        prop.load(new FileInputStream("properties/settings/fpsLimit.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -69,6 +81,9 @@ public class SettingsScreen implements Screen {
         menuHeight = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
         menuWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
+        selectedMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.2.margin.right")));
+        selectedRect.height = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
+        selectedRect.width = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
 
         prop.load(new FileInputStream("properties/main.properties"));
         imagePath = prop.getProperty("dir.images");
@@ -86,6 +101,10 @@ public class SettingsScreen implements Screen {
         labelPos.y = game.HEIGHT - labelMarginTop;
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
+
+        settings = new SettingsSystem("game", game.log);
+
+        login = TimeUtils.nanoTime();
     }
 
     @Override
@@ -103,8 +122,19 @@ public class SettingsScreen implements Screen {
             game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
         game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
+        game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
+        int npos = (int) settings.get("FPS.limit", 60);
+
+        for (int i = 0; i < menuLables.length; i++)
+            if (menuLables[i].equals("" + npos)) {
+                npos = i;
+                break;
+            }
+
+        selectedX = menuLabelsX - selectedMarginRight;
+        selectedY = (int) (labelPos.y - (npos + 1) * menuElementStep - menuMarginBottom);
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 pos++;
@@ -116,18 +146,24 @@ public class SettingsScreen implements Screen {
             }
         }
 
-
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-            game.setScreen(menu);
-
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
-            switch (pos) {
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+            game.setScreen(menu);
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
+            try {
+                settings.setProperty("FPS.limit", Integer.parseInt(menuLables[pos]));
+                game.setScreen(new RestartScreen(game, menu));
+            } catch (IOException e) {
+                e.printStackTrace();
+                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                Gdx.app.exit();
             }
+        }
     }
 
     @Override
@@ -157,7 +193,7 @@ public class SettingsScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.log.Log("Disposing results screen", LogSystem.INFO);
+        game.log.Log("Disposing FPS Limit select screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
@@ -166,6 +202,8 @@ public class SettingsScreen implements Screen {
         selectedImage = null;
         labelPos = null;
         menu = null;
+        settings.dispose();
+        settings = null;
     }
 
 }

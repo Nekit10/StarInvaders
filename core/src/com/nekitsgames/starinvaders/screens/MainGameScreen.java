@@ -8,12 +8,15 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
+import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
+import com.nekitsgames.starinvaders.StarInvaders;
 import com.nekitsgames.starinvaders.classes.Asteroid;
 import com.nekitsgames.starinvaders.classes.AsteroidType;
 
@@ -28,6 +31,8 @@ public class MainGameScreen implements Screen {
     private OrthographicCamera camera;
     private StarInvaders game;
     private Properties prop;
+    private SettingsSystem setings;
+    private GlyphLayout glyphLayout;
 
     private Texture shipImage;
     private Texture lazerImage;
@@ -65,24 +70,28 @@ public class MainGameScreen implements Screen {
     private static ArrayList<Asteroid> asteroids;
     private static AsteroidType[] typies;
 
+    private static boolean showFPS;
+    private static String FPSLabel;
+
     public MainGameScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing main game screen", LogSystem.INFO);
 
         prop = new Properties();
+        setings = new SettingsSystem("game", game.log);
 
         prop.load(new FileInputStream("properties/ship.properties"));
-        SHIP_WIDTH = Integer.parseInt(prop.getProperty("ship.1.width"));
-        SHIP_HEIGHT = Integer.parseInt(prop.getProperty("ship.1.height"));
+        SHIP_WIDTH = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship.1.width")));
+        SHIP_HEIGHT = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("ship.1.height")));
         SHIP_Y = (int) (Double.parseDouble(prop.getProperty("ship.1.y")) * game.WIDTH);
         SHIP_ONE_STEP_TOUCH = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship.1.step.mouse")));
         SHIP_ONE_STEP_KEY = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship.1.step.key")));
         SHIP_FILE = prop.getProperty("ship.1.texture");
 
         prop.load(new FileInputStream("properties/amunition.properties"));
-        LAZER_WIDTH = Integer.parseInt(prop.getProperty("amunition.1.width"));
-        LAZER_HEIGHT = Integer.parseInt(prop.getProperty("amunition.1.height"));
+        LAZER_WIDTH = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("amunition.1.width")));
+        LAZER_HEIGHT = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("amunition.1.height")));
         LAZER_STEP = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("amunition.1.step")));
-        LAZER_WAIT_TIME = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("amunition.1.wait_time")));
+        LAZER_WAIT_TIME = Long.parseLong(prop.getProperty("amunition.1.wait_time"));
         LAZER_FILE = prop.getProperty("amunition.1.texture");
         LAZER_SOUND = prop.getProperty("amunition.1.sound");
 
@@ -94,6 +103,9 @@ public class MainGameScreen implements Screen {
         prop.load(new FileInputStream("properties/asteroids.properties"));
         int count = Integer.parseInt(prop.getProperty("asteroid.count"));
         typies = new AsteroidType[count];
+
+        prop.load(new FileInputStream("properties/strings.us.properties"));
+        FPSLabel = prop.getProperty("fps.label");
 
         asteroids = new ArrayList<Asteroid>();
 
@@ -127,15 +139,16 @@ public class MainGameScreen implements Screen {
         for (int i = 0; i < typies.length; i++) {
             prop.load(new FileInputStream("properties/asteroids.properties"));
             typies[i] = new AsteroidType(
-                    Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".width")),
-                    Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".height")),
+                    Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".width")),
+                    Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".height")),
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".step")),
-                    Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".spawn_after")),
+                    Long.parseLong(prop.getProperty("asteroid." + (i + 1) + ".spawn_after")),
                     prop.getProperty("asteroid." + (i + 1) + ".texture"),
                     0,
                     image_path,
+                    game.WIDTH,
                     game.HEIGHT,
-                    game.WIDTH
+                    (int) setings.get("difficulty", 2000000)
             );
         }
 
@@ -180,11 +193,16 @@ public class MainGameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         game.batch.begin();
-        game.batch.draw(shipImage, shipRect.x, shipRect.y);
+        game.batch.draw(shipImage, shipRect.x, shipRect.y, shipRect.getWidth(), shipRect.getHeight());
         for (Rectangle lazerRect : lazerRects)
-            game.batch.draw(lazerImage, lazerRect.x, lazerRect.y);
+            game.batch.draw(lazerImage, lazerRect.x, lazerRect.y, lazerRect.getWidth(), lazerRect.getHeight());
         for (Asteroid astr : asteroids) {
-            game.batch.draw(astr.getType().getTexture(), astr.getRect().x, astr.getRect().y);
+            game.batch.draw(astr.getType().getTexture(), astr.getRect().x, astr.getRect().y, astr.getRect().getWidth(), astr.getRect().getHeight());
+        }
+        if (showFPS) {
+            String    fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
+            glyphLayout = new GlyphLayout(game.fontData, fps);
+            game.fontData.draw(game.batch, fps, game.WIDTH - glyphLayout.width, game.HEIGHT - glyphLayout.height);
         }
         game.batch.end();
 
@@ -214,8 +232,10 @@ public class MainGameScreen implements Screen {
             rect.y += LAZER_STEP * Gdx.graphics.getDeltaTime();
             ArrayList<Integer> rm = new ArrayList<>();
             for (Asteroid astr : asteroids)
-                if (rect.overlaps(astr.getRect()))
+                if (rect.overlaps(astr.getRect())) {
                     rm.add(asteroids.indexOf(astr));
+                    iterator.remove();
+                }
             for (int i : rm)
                 asteroids.remove(i);
         }
@@ -226,6 +246,7 @@ public class MainGameScreen implements Screen {
             } catch (IOException e) {
                 e.printStackTrace();
                 game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                Gdx.app.exit();
             }
 
         spawnAsteroids(asteroids, typies);
@@ -246,6 +267,7 @@ public class MainGameScreen implements Screen {
                 } catch (IOException e) {
                     e.printStackTrace();
                     game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                    Gdx.app.exit();
                 }
         }
 
@@ -279,7 +301,15 @@ public class MainGameScreen implements Screen {
 
     @Override
     public void show() {
-
+        try {
+            prop.load(new FileInputStream("properties/defaults.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+            Gdx.app.exit();
+        }
+        showFPS = (boolean) setings.get("FPS.show", Boolean.parseBoolean(prop.getProperty("settings.FPS.show")));
+        game.log.Log("Show FPS - " + showFPS, LogSystem.INFO);
     }
 
     @Override

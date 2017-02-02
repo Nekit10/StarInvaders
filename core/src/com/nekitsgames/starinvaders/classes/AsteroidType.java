@@ -11,11 +11,11 @@ public class AsteroidType {
     private Texture texture;
     private long last_spawn;
 
-    public AsteroidType(int width, int height, double step, double spawn_after, String texture, long last_spawn, String image_path, int res_height, int res_width) {
-        this.width = width;
-        this.height = height;
-        this.step = (int) (step * res_height);
-        this.spawn_after = (int) (spawn_after * res_width);
+    public AsteroidType(double width, double height, double step, long spawn_after, String texture, long last_spawn, String image_path, int res_height, int res_width, int dif) {
+        this.width = (int) (res_width * width);
+        this.height = (int) (res_height * height);
+        this.step = (int) (step * res_height * (dif + 1) * (dif == 0 ? 1 : 0.3));
+        this.spawn_after = (int) (spawn_after / Math.ceil((dif + 1f) / 2f));
         this.texture = new Texture(image_path + texture);
         this.last_spawn = last_spawn;
     }

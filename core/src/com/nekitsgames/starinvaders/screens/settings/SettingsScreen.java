@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders.screens;
+package com.nekitsgames.starinvaders.screens.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,12 +12,13 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
+import com.nekitsgames.starinvaders.screens.MainMenuScreen;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class GameEndScreen implements Screen {
+public class SettingsScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
@@ -36,6 +37,9 @@ public class GameEndScreen implements Screen {
 
     private Rectangle labelPos;
 
+    private int pos = 0;
+    private long lastMenuChange;
+
     private String selectedTexture;
     private String imagePath;
     private int labelMarginTop;
@@ -46,21 +50,23 @@ public class GameEndScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private int pos = 0;
-    private long lastMenuChange;
+    private MainMenuScreen menu;
+    private long login;
 
-    public GameEndScreen(StarInvaders game) throws IOException {
-        game.log.Log("Initializing game end screen", LogSystem.INFO);
+    public SettingsScreen(StarInvaders game, MainMenuScreen menu) throws IOException {
+        this.menu = menu;
+
+        game.log.Log("Initializing settings screen", LogSystem.INFO);
 
         settings = new SettingsSystem("main", game.log);
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("die.label");
-        menuLables = prop.getProperty("die.elements").split(";");
+        label = prop.getProperty("settings.label");
+        menuLables = prop.getProperty("settings.elements").split(";");
 
-        prop.load(new FileInputStream("properties/die.properties"));
+        prop.load(new FileInputStream("properties/settings/settings.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -117,16 +123,20 @@ public class GameEndScreen implements Screen {
             }
         }
 
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && TimeUtils.nanoTime() - login > 500000000)
+            game.setScreen(menu);
+
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
             switch (pos) {
                 case 0:
                     try {
-                        game.setScreen(new MainGameScreen(game));
+                        game.setScreen(new FPSShowScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -135,7 +145,7 @@ public class GameEndScreen implements Screen {
                     break;
                 case 1:
                     try {
-                        game.setScreen(new MainMenuScreen(game));
+                        game.setScreen(new FPSLimitScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -143,14 +153,38 @@ public class GameEndScreen implements Screen {
                     }
                     break;
                 case 2:
-                    Gdx.app.exit();
+                    try {
+                        game.setScreen(new ResolutionScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 3:
+                    try {
+                        game.setScreen(new LanguageScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 4:
+                    try {
+                        game.setScreen(new DifScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
                     break;
             }
     }
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override
@@ -175,7 +209,7 @@ public class GameEndScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.log.Log("Disposing game end screen", LogSystem.INFO);
+        game.log.Log("Disposing results screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
@@ -183,6 +217,7 @@ public class GameEndScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
+        menu = null;
         settings.dispose();
         settings = null;
     }

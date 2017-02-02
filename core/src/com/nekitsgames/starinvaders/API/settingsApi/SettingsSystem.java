@@ -28,7 +28,7 @@ public class SettingsSystem {
         saveJsonObject(jsonObject);
     }
 
-    public Object get(String key, String def) {
+    public Object get(String key, Object def) {
         JSONObject jsonObject = readJSONObject();
         if (!jsonObject.isNull(key))
             return jsonObject.get(key);
@@ -60,7 +60,6 @@ public class SettingsSystem {
 
     public void dispose() {
         log.Log("Disposing SettingsSystem", LogSystem.INFO);
-        log.dispose();
         log = null;
     }
 

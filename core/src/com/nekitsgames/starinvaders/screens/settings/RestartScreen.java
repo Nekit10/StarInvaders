@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders.screens;
+package com.nekitsgames.starinvaders.screens.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -17,7 +17,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class GameEndScreen implements Screen {
+public class RestartScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
@@ -36,6 +36,9 @@ public class GameEndScreen implements Screen {
 
     private Rectangle labelPos;
 
+    private int pos = 0;
+    private long lastMenuChange;
+
     private String selectedTexture;
     private String imagePath;
     private int labelMarginTop;
@@ -46,21 +49,23 @@ public class GameEndScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private int pos = 0;
-    private long lastMenuChange;
+    private SettingsScreen menu;
+    private long login;
 
-    public GameEndScreen(StarInvaders game) throws IOException {
-        game.log.Log("Initializing game end screen", LogSystem.INFO);
+    public RestartScreen(StarInvaders game, SettingsScreen menu) throws IOException {
+        this.menu = menu;
+
+        game.log.Log("Initializing restar app screen", LogSystem.INFO);
 
         settings = new SettingsSystem("main", game.log);
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("die.label");
-        menuLables = prop.getProperty("die.elements").split(";");
+        label = prop.getProperty("settings.restart.label");
+        menuLables = prop.getProperty("settings.restart.elements").split(";");
 
-        prop.load(new FileInputStream("properties/die.properties"));
+        prop.load(new FileInputStream("properties/settings/settings.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -122,35 +127,31 @@ public class GameEndScreen implements Screen {
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+            game.setScreen(menu);
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
             switch (pos) {
                 case 0:
+                    String filePath = "Star Invaders.exe";
                     try {
-                        game.setScreen(new MainGameScreen(game));
-                    } catch (IOException e) {
+                        Process p = Runtime.getRuntime().exec(filePath);
+                        Gdx.app.exit();
+                    } catch (Exception e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
                         Gdx.app.exit();
                     }
                     break;
                 case 1:
-                    try {
-                        game.setScreen(new MainMenuScreen(game));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 2:
-                    Gdx.app.exit();
+                        game.setScreen(menu);
                     break;
             }
     }
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override
@@ -175,7 +176,7 @@ public class GameEndScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.log.Log("Disposing game end screen", LogSystem.INFO);
+        game.log.Log("Disposing restart app screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
@@ -183,6 +184,7 @@ public class GameEndScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
+        menu = null;
         settings.dispose();
         settings = null;
     }

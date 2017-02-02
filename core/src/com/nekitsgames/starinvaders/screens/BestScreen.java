@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
+import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
+import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -30,6 +32,7 @@ public class BestScreen implements Screen {
 
     private static int menuLabelsX;
     private static double menuLabelXAdd;
+    SettingsSystem settings;
 
     private Rectangle labelPos;
 
@@ -51,9 +54,11 @@ public class BestScreen implements Screen {
     public BestScreen(StarInvaders game, MainMenuScreen menu) throws IOException {
         this.menu = menu;
 
+        settings = new SettingsSystem("main", game.log);
+
         game.log.Log("Initializing results screen.", LogSystem.INFO);
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings.us.properties"));
+        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("result.label");
         menuLables = prop.getProperty("result.elements").split(";");
@@ -163,6 +168,8 @@ public class BestScreen implements Screen {
         selectedImage = null;
         labelPos = null;
         menu = null;
+        settings.dispose();
+        settings = null;
     }
 
 }

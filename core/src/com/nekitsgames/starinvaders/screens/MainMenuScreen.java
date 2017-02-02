@@ -11,9 +11,11 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
+import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
+import com.nekitsgames.starinvaders.StarInvaders;
+import com.nekitsgames.starinvaders.screens.settings.SettingsScreen;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 public class MainMenuScreen implements Screen {
@@ -22,6 +24,7 @@ public class MainMenuScreen implements Screen {
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
+    private SettingsSystem settings;
 
     private Texture selectedImage;
     private Music menuMusic;
@@ -50,10 +53,15 @@ public class MainMenuScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
+    private long login;
+
     public MainMenuScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing main menu", LogSystem.INFO);
+
+        settings = new SettingsSystem("main", game.log);
+
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings.us.properties"));
+        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("menu.label");
         menuLables = prop.getProperty("menu.elements").split(";");
@@ -78,14 +86,13 @@ public class MainMenuScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
-        glyphLayout = new GlyphLayout(game.fontMain, label);
+        glyphLayout = new GlyphLayout(
+                game.fontMain,
+                label);
         labelPos = new Rectangle();
 
         selectedImage = new Texture(imagePath + selectedTexture);
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal(soundPath + soundName));
-
-        menuMusic.setLooping(true);
-        menuMusic.play();
 
         labelPos.x = (int) ((game.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = game.HEIGHT - labelMarginTop;
@@ -126,7 +133,7 @@ public class MainMenuScreen implements Screen {
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
             switch (pos) {
                 case 0:
                     try {
@@ -134,6 +141,7 @@ public class MainMenuScreen implements Screen {
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
                     }
                     dispose();
                     break;
@@ -144,19 +152,21 @@ public class MainMenuScreen implements Screen {
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
                     }
                     break;
 
-                case 2:
+                case 3:
                     try {
                         game.setScreen(new BestScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
                     }
                     break;
 
-                case 3:
+                case 4:
                     Gdx.app.exit();
                     break;
             }
@@ -164,7 +174,9 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
+        menuMusic.setLooping(true);
+        menuMusic.play();
     }
 
     @Override
@@ -199,6 +211,8 @@ public class MainMenuScreen implements Screen {
         labelPos = null;
         menuMusic.dispose();
         menuMusic = null;
+        settings.dispose();
+        settings = null;
     }
 
 }
