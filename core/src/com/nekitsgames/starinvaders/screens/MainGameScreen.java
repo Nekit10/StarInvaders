@@ -148,7 +148,7 @@ public class MainGameScreen implements Screen {
                     image_path,
                     game.WIDTH,
                     game.HEIGHT,
-                    (int) setings.get("difficulty", 2000000)
+                    (int) setings.get("difficulty", 2)
             );
         }
 
