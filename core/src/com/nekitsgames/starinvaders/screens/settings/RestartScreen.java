@@ -65,7 +65,7 @@ public class RestartScreen implements Screen {
         label = prop.getProperty("settings.restart.label");
         menuLables = prop.getProperty("settings.restart.elements").split(";");
 
-        prop.load(new FileInputStream("properties/settings/settings.properties"));
+        prop.load(new FileInputStream("properties/settings/restart.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
