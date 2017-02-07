@@ -1,4 +1,7 @@
 @Update info file
-update.name=Star Invaders 1.4
-update.ver=1.4
+
+update.type=release
+update.v=v1.3
+update.name=Star Invaders 1.3
+update.ver=1.2
 update.need=true
