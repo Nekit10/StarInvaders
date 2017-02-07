@@ -1,4 +1,4 @@
-@Update info file
+#Update info file
 
 update.type=release
 update.v=v1.3
