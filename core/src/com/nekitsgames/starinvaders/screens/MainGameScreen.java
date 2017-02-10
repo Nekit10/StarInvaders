@@ -36,6 +36,7 @@ public class MainGameScreen implements Screen {
 
     private Texture shipImage;
     private Texture lazerImage;
+    private Texture hearthImage;
     private Sound lazerSound;
     private Music spaceSound;
 
@@ -63,6 +64,11 @@ public class MainGameScreen implements Screen {
     private static long LAZER_WAIT_TIME;
     private static String LAZER_FILE;
     private static String LAZER_SOUND;
+
+    private int hearthHeight;
+    private int hearthWidth;
+
+    private int hp;
 
     private static String image_path;
     private static String music_path;
@@ -107,6 +113,11 @@ public class MainGameScreen implements Screen {
         prop.load(new FileInputStream("properties/strings.us.properties"));
         FPSLabel = prop.getProperty("fps.label");
 
+        prop.load(new FileInputStream("properties/game.properties"));
+        hearthImage = new Texture(image_path + prop.getProperty("hearth.texture"));
+        hearthHeight = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("hearth.height")));
+        hearthWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("hearth.width")));
+
         asteroids = new ArrayList<Asteroid>();
 
 
@@ -148,13 +159,18 @@ public class MainGameScreen implements Screen {
                     image_path,
                     game.WIDTH,
                     game.HEIGHT,
-                    (int) setings.get("difficulty", 2)
+                    (int) setings.get("difficulty", 2),
+                    Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".dif_cof")),
+                    Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".damage")),
+                    prop.getProperty("asteroid." + (i + 1) + ".killable").equals("1")
             );
         }
 
         spawnAsteroids(asteroids, typies);
 
         lazerRects = new Array<Rectangle>();
+
+        hp = 100;
     }
 
     private void spawnLazer(float x, float y) {
@@ -200,10 +216,16 @@ public class MainGameScreen implements Screen {
             game.batch.draw(astr.getType().getTexture(), astr.getRect().x, astr.getRect().y, astr.getRect().getWidth(), astr.getRect().getHeight());
         }
         if (showFPS) {
-            String    fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
+            String fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
             glyphLayout = new GlyphLayout(game.fontData, fps);
             game.fontData.draw(game.batch, fps, game.WIDTH - glyphLayout.width, game.HEIGHT - glyphLayout.height);
         }
+
+        game.batch.draw(hearthImage, 0, game.HEIGHT - hearthHeight, hearthWidth, hearthHeight);
+
+        String hps = hp + "%";
+        glyphLayout = new GlyphLayout(game.fontData, hps);
+        game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
         game.batch.end();
 
         if (Gdx.input.isTouched()) {
@@ -232,7 +254,7 @@ public class MainGameScreen implements Screen {
             rect.y += LAZER_STEP * Gdx.graphics.getDeltaTime();
             ArrayList<Integer> rm = new ArrayList<>();
             for (Asteroid astr : asteroids)
-                if (rect.overlaps(astr.getRect())) {
+                if (rect.overlaps(astr.getRect()) && astr.getType().isKillable()) {
                     rm.add(asteroids.indexOf(astr));
                     iterator.remove();
                 }
@@ -260,19 +282,25 @@ public class MainGameScreen implements Screen {
             );
             if (astr.getRect().y < 0 - astr.getType().getHeight())
                 indexes.add(asteroids.indexOf(astr));
-            if (astr.getRect().overlaps(shipRect))
-                try {
-                    die();
-                    return;
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                    Gdx.app.exit();
-                }
+            if (astr.getRect().overlaps(shipRect)) {
+                hp -= astr.getType().getDamage();
+                indexes.add(asteroids.indexOf(astr));
+            }
         }
 
         for (int i : indexes)
             asteroids.remove(i);
+
+        if (hp <= 0)
+            try {
+                die();
+            } catch (IOException e) {
+                e.printStackTrace();
+                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                Gdx.app.exit();
+            }
+        if (hp > 100)
+            hp = 100;
 
     }
 
