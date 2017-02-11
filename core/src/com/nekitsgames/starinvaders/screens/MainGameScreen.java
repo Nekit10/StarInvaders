@@ -299,8 +299,8 @@ public class MainGameScreen implements Screen {
                 game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
                 Gdx.app.exit();
             }
-        if (hp > 100)
-            hp = 100;
+        if (hp > 200)
+            hp = 200;
 
     }
 
