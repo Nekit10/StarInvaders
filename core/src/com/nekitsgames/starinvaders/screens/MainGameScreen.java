@@ -244,8 +244,8 @@ public class MainGameScreen implements Screen {
         game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
 
         String dis = distance + " m";
-        GlyphLayout glyphLayout2 = new GlyphLayout(game.fontData, dis);
-        game.fontData.draw(game.batch, dis, 0, game.HEIGHT - (game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f) - glyphLayout2.height);
+
+        game.fontData.draw(game.batch, dis, 0, 0);
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
