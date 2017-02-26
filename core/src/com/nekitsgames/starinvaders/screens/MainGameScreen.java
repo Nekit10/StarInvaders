@@ -36,6 +36,7 @@ public class MainGameScreen implements Screen {
     private GlyphLayout glyphLayout;
 
     private int distance;
+    private long lastDis;
 
     private Texture shipImage;
     private Texture lazerImage;
@@ -210,7 +211,7 @@ public class MainGameScreen implements Screen {
 
 
     private void die() throws IOException {
-        game.setScreen(new GameEndScreen(game));
+        game.setScreen(new GameEndScreen(game, distance));
         dispose();
     }
 
@@ -241,6 +242,10 @@ public class MainGameScreen implements Screen {
         String hps = hp + "%";
         glyphLayout = new GlyphLayout(game.fontData, hps);
         game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
+
+        String dis = distance + " m";
+        GlyphLayout glyphLayout2 = new GlyphLayout(game.fontData, dis);
+        game.fontData.draw(game.batch, dis, 0, game.HEIGHT - (game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f) - glyphLayout2.height);
         game.batch.end();
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
@@ -301,7 +306,10 @@ public class MainGameScreen implements Screen {
         for (int i : indexes)
             asteroids.remove(i);
 
-        distance += 30 * delta;
+        if (TimeUtils.nanoTime() - lastDis > 53333333) {
+            distance++;
+            lastDis = TimeUtils.nanoTime();
+        }
 
         if (hp <= 0)
             try {

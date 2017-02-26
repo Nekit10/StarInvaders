@@ -36,6 +36,8 @@ public class GameEndScreen implements Screen {
 
     private Rectangle labelPos;
 
+    private int distance;
+
     private String selectedTexture;
     private String imagePath;
     private int labelMarginTop;
@@ -49,16 +51,22 @@ public class GameEndScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
-    public GameEndScreen(StarInvaders game) throws IOException {
+    private String distan;
+    private int disX, disY;
+
+    public GameEndScreen(StarInvaders game, int dis) throws IOException {
         game.log.Log("Initializing game end screen", LogSystem.INFO);
 
         settings = new SettingsSystem("main", game.log);
+
+        this.distance = dis;
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("die.label");
         menuLables = prop.getProperty("die.elements").split(";");
+        distan = prop.getProperty("die.result") + " " + distance + " m";
 
         prop.load(new FileInputStream("properties/die.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
@@ -87,6 +95,11 @@ public class GameEndScreen implements Screen {
         labelPos.y = game.HEIGHT - labelMarginTop;
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
+
+        glyphLayout = new GlyphLayout(game.fontLabel, distan);
+
+        disX = (int) ((game.WIDTH - glyphLayout.width) / 2);
+        disY = (int) (labelPos.y - 100 - glyphLayout.height);
     }
 
     @Override
@@ -100,10 +113,12 @@ public class GameEndScreen implements Screen {
         game.batch.begin();
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
-        for (int i = 0; i < menuLables.length; i++)
-            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
+        game.fontLabel.draw(game.batch, distan, disX, disY);
 
-        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
+        for (int i = 0; i < menuLables.length; i++)
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - 100 - (i + 1) * menuElementStep);
+
+        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - 100 - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
         game.batch.end();
 
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
