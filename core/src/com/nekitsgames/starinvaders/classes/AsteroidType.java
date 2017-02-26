@@ -8,20 +8,23 @@ public class AsteroidType {
     private int height;
     private int step;
     private long spawn_after;
-    private Texture texture;
+    private Texture[] texture;
     private long last_spawn;
     private int damage;
     private boolean killable;
+    private int hp;
 
-    public AsteroidType(double width, double height, double step, long spawn_after, String texture, long last_spawn, String image_path, int res_height, int res_width, int dif, double dif_cof, int damage, boolean killable) {
+
+    public AsteroidType(double width, double height, double step, long spawn_after, Texture[] texture, long last_spawn, String image_path, int res_height, int res_width, int dif, double dif_cof, int damage, boolean killable, int hp) {
         this.width = (int) (res_width * width);
         this.height = (int) (res_height * height);
         this.step = (int) (step * res_height * (dif + 1) * (dif == 0 ? 1 : 0.3));
         this.spawn_after = (int) (spawn_after * dif_cof / Math.ceil((dif + 1f) / 2f));
-        this.texture = new Texture(image_path + texture);
+        this.texture = texture;
         this.last_spawn = last_spawn;
         this.damage = damage;
         this.killable = killable;
+        this.hp = hp;
     }
 
     public int getWidth() {
@@ -48,7 +51,7 @@ public class AsteroidType {
         this.last_spawn = last_spawn;
     }
 
-    public Texture getTexture() {
+    public Texture[] getTexture() {
         return texture;
     }
 
@@ -58,5 +61,9 @@ public class AsteroidType {
 
     public boolean isKillable() {
         return killable;
+    }
+
+    public int getHp() {
+        return hp;
     }
 }

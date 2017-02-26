@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 public class MainGameScreen implements Screen {
@@ -33,6 +34,8 @@ public class MainGameScreen implements Screen {
     private Properties prop;
     private SettingsSystem setings;
     private GlyphLayout glyphLayout;
+
+    private int distance;
 
     private Texture shipImage;
     private Texture lazerImage;
@@ -149,12 +152,23 @@ public class MainGameScreen implements Screen {
 
         for (int i = 0; i < typies.length; i++) {
             prop.load(new FileInputStream("properties/asteroids.properties"));
+
+            int counts = Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".hp.textures.count"));
+
+            Texture[] textures = new Texture[counts + 1];
+
+            textures[0] = (new Texture(image_path + prop.getProperty("asteroid." + (i + 1) + ".texture")));
+
+            for (int j = 1; j <= counts; j++) {
+                textures[j] = new Texture(image_path + prop.getProperty("asteroid." + (i + 1) + ".hp.texture." + j + ".texture"));
+            }
+
             typies[i] = new AsteroidType(
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".width")),
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".height")),
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".step")),
                     Long.parseLong(prop.getProperty("asteroid." + (i + 1) + ".spawn_after")),
-                    prop.getProperty("asteroid." + (i + 1) + ".texture"),
+                    textures,
                     0,
                     image_path,
                     game.WIDTH,
@@ -162,7 +176,8 @@ public class MainGameScreen implements Screen {
                     (int) setings.get("difficulty", 2),
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".dif_cof")),
                     Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".damage")),
-                    prop.getProperty("asteroid." + (i + 1) + ".killable").equals("1")
+                    prop.getProperty("asteroid." + (i + 1) + ".killable").equals("1"),
+                    Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".hp"))
             );
         }
 
@@ -187,7 +202,7 @@ public class MainGameScreen implements Screen {
     private void spawnAsteroids(ArrayList<Asteroid> astrs, AsteroidType[] typs) {
         for (AsteroidType type : typs) {
             if (TimeUtils.nanoTime() - type.getLast_spawn() > type.getSpawn_after()) {
-                astrs.add(new Asteroid(type, MathUtils.random(0, game.WIDTH), game.HEIGHT));
+                astrs.add(new Asteroid(type, MathUtils.random(0, game.WIDTH), game.HEIGHT, 0));
                 astrs.get(astrs.size() - 1).getType().setLast_spawn(TimeUtils.nanoTime());
             }
         }
@@ -213,7 +228,7 @@ public class MainGameScreen implements Screen {
         for (Rectangle lazerRect : lazerRects)
             game.batch.draw(lazerImage, lazerRect.x, lazerRect.y, lazerRect.getWidth(), lazerRect.getHeight());
         for (Asteroid astr : asteroids) {
-            game.batch.draw(astr.getType().getTexture(), astr.getRect().x, astr.getRect().y, astr.getRect().getWidth(), astr.getRect().getHeight());
+            game.batch.draw(astr.getType().getTexture()[astr.getTexture()], astr.getRect().x, astr.getRect().y, astr.getRect().getWidth(), astr.getRect().getHeight());
         }
         if (showFPS) {
             String fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
@@ -227,15 +242,6 @@ public class MainGameScreen implements Screen {
         glyphLayout = new GlyphLayout(game.fontData, hps);
         game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
         game.batch.end();
-
-        if (Gdx.input.isTouched()) {
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
-            if (touchPos.x < game.WIDTH / 2)
-                shipRect.x -= SHIP_ONE_STEP_TOUCH;
-            else
-                shipRect.x += SHIP_ONE_STEP_TOUCH;
-        }
 
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
             shipRect.x -= SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
@@ -255,7 +261,11 @@ public class MainGameScreen implements Screen {
             ArrayList<Integer> rm = new ArrayList<>();
             for (Asteroid astr : asteroids)
                 if (rect.overlaps(astr.getRect()) && astr.getType().isKillable()) {
-                    rm.add(asteroids.indexOf(astr));
+                    astr.setHp(astr.getHp() - 1);
+                    if (astr.getHp() <= 0)
+                        rm.add(asteroids.indexOf(astr)); else
+                        astr.setTexture(astr.getTexture() + 1);
+
                     iterator.remove();
                 }
             for (int i : rm)
@@ -290,6 +300,8 @@ public class MainGameScreen implements Screen {
 
         for (int i : indexes)
             asteroids.remove(i);
+
+        distance += 30 * delta;
 
         if (hp <= 0)
             try {
