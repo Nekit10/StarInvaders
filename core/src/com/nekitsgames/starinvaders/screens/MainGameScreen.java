@@ -77,8 +77,10 @@ public class MainGameScreen implements Screen {
     private static boolean showFPS;
     private static String FPSLabel;
 
-    private static int ship = 1;
+    private static int ship = 5;
     private static int ship_armour = 100;
+
+    private static String lazer_texture;
 
     public MainGameScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing main game screen", LogSystem.INFO);
@@ -100,6 +102,7 @@ public class MainGameScreen implements Screen {
         SHIP_ONE_STEP_TOUCH = (int) (game.WIDTH * (Double.parseDouble(prop.getProperty("ship." + ship + ".step.mouse"))) + (double) gameplaySettings.get("tech.data", 0.0));
         SHIP_ONE_STEP_KEY = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship." + ship + ".step.key")));
         SHIP_FILE = prop.getProperty("ship." + ship +  ".texture");
+        lazer_texture = prop.getProperty("ship." + ship + ".lazer");
 
         ship_armour = (int) gameplaySettings.get("armour.percent", 0);
 
@@ -112,7 +115,7 @@ public class MainGameScreen implements Screen {
                     Double.parseDouble(prop.getProperty("amunition." + (i + 1) + ".height")),
                     Double.parseDouble(prop.getProperty("amunition." + (i + 1) + ".step")),
                     Integer.parseInt(prop.getProperty("amunition." + (i + 1) + ".wait_time")),
-                    prop.getProperty("amunition." + (i + 1) + ".texture"),
+                    (i == 0) ? lazer_texture : prop.getProperty("amunition." + (i + 1) + ".texture"),
                     prop.getProperty("amunition." + (i + 1) + ".sound"),
                     prop.getProperty("amunition." + (i + 1) + ".expl_image"),
                     image_path,
