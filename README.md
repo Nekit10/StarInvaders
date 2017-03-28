@@ -4,7 +4,14 @@ Star Invaders - простая игра. Я делаю Star Invaders как пр
 и не имеете право закрыть исходные коды, они все равно должны бесплатно распростроняться со всеми изменениями согластно лицензии GPL. Для 
 создания игры используется LibGDX и IDE Intellij Idea.
 
-##Авторы
+# Star Invaders 3
+Я закончил работу над Star Invaders 2. Теперь я буду работать над Star Invaders 3! Пока я не могу сказать что-то про SI3, скажу только что он будет в 3D!
+
+# Контакты
+Если вы хотите связаться со мной (Никита Серба), вы можете написать мне на email nikitaserba@gmail.com.
+
+## Авторы
+
 Гейм Дизайенры: Никита Серба
 
 Программисты: Никита Серба
@@ -15,14 +22,10 @@ Star Invaders - простая игра. Я делаю Star Invaders как пр
 
 Права на исходный код принадлежат мне (Никита Серба)
 
-Права на space_sound.mp3 и menu_sound.mp3 принадлежат DL-Sounds (https://www.dl-sounds.com/)
+Права на музыку принадлежат DL-Sounds (https://www.dl-sounds.com/)
 
-Права на все остальные звуки принадллежат FreeSFX (http://www.freesfx.co.uk/)
+Права на звуки FreeSFX (http://www.freesfx.co.uk/)
 
-Права на ship.png и ship2.png принадлежат wuhu с сайта OpenGameArt (http://opengameart.org/users/wuhu)
+Изображения взыты с сайта OpenGameArt (http://opengameart.org/users/wuhu)
 
-Права на asteroid_big.png и asteroid_small.png принадлежат nightzero с сайта OpenGameArt (http://opengameart.org/users/nightzero)
-
-Права на lazer.png и selected.png принадлежат мне (Никита Серба)
-
-Права на pdark.ttf и zorque.ttf принадлежат http://www.1001fonts.com/
+Права на шрифты принадлежат http://www.1001fonts.com/
