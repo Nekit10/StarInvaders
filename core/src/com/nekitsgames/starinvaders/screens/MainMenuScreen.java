@@ -167,16 +167,6 @@ public class MainMenuScreen implements Screen {
                     break;
 
                 case 3:
-                    try {
-                        game.setScreen(new BestScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-
-                case 4:
                     Gdx.app.exit();
                     break;
             }
