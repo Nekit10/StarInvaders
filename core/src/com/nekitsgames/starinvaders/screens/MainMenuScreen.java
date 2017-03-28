@@ -14,6 +14,7 @@ import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 import com.nekitsgames.starinvaders.screens.settings.SettingsScreen;
+import com.nekitsgames.starinvaders.screens.settings.ShipScreen;
 
 import java.io.*;
 import java.util.Properties;
@@ -157,7 +158,7 @@ public class MainMenuScreen implements Screen {
                     break;
                 case 2:
                     try {
-                        game.setScreen(new ShopScreen(game, this));
+                        game.setScreen(new ShipScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);

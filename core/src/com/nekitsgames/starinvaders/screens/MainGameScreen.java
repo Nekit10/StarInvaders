@@ -77,7 +77,7 @@ public class MainGameScreen implements Screen {
     private static boolean showFPS;
     private static String FPSLabel;
 
-    private static int ship = 5;
+    private static int ship = 1;
     private static int ship_armour = 100;
 
     private static String lazer_texture;
@@ -87,6 +87,9 @@ public class MainGameScreen implements Screen {
 
         prop = new Properties();
         setings = new SettingsSystem("game", game.log);
+
+        setings = new SettingsSystem("gamedata", game.log);
+        ship = (int) setings.get("ship", 1);
 
         prop.load(new FileInputStream("properties/main.properties"));
         music_path = prop.getProperty("dir.sound");

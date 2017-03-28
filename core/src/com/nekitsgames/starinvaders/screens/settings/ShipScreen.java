@@ -1,4 +1,4 @@
-package com.nekitsgames.starinvaders.screens;
+package com.nekitsgames.starinvaders.screens.settings;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -12,29 +12,34 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
+import com.nekitsgames.starinvaders.screens.MainMenuScreen;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ShopScreen implements Screen {
+public class ShipScreen implements Screen {
 
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
+    private SettingsSystem settings;
 
     private Texture selectedImage;
 
     private static String label;
 
     private static String[] menuLables;
+    private Rectangle selectedRect;
 
     private static int menuLabelsX;
     private static double menuLabelXAdd;
-    SettingsSystem settings;
 
     private Rectangle labelPos;
+
+    private int pos = 0;
+    private long lastMenuChange;
 
     private String selectedTexture;
     private String imagePath;
@@ -46,24 +51,28 @@ public class ShopScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private int pos = 0;
-    private long lastMenuChange;
-
     private MainMenuScreen menu;
+    private long login;
 
-    public ShopScreen(StarInvaders game, MainMenuScreen menu) throws IOException {
+    private int selectedX, selectedY;
+    private int selectedMarginRight;
+
+    public ShipScreen(StarInvaders game, MainMenuScreen menu) throws IOException {
         this.menu = menu;
+
+        game.log.Log("Initializing ship screen", LogSystem.INFO);
 
         settings = new SettingsSystem("main", game.log);
 
-        game.log.Log("Initializing  screen.", LogSystem.INFO);
+        selectedRect = new Rectangle();
+
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("shop.label");
-        menuLables = prop.getProperty("shop.elements").split(";");
+        label = prop.getProperty("ship.label");
+        menuLables = prop.getProperty("ship.elements").split(";");
 
-        prop.load(new FileInputStream("properties/shop.properties"));
+        prop.load(new FileInputStream("properties/ships.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -73,6 +82,9 @@ public class ShopScreen implements Screen {
         menuHeight = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
         menuWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
+        selectedMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.2.margin.right")));
+        selectedRect.height = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
+        selectedRect.width = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
 
         prop.load(new FileInputStream("properties/main.properties"));
         imagePath = prop.getProperty("dir.images");
@@ -90,6 +102,10 @@ public class ShopScreen implements Screen {
         labelPos.y = game.HEIGHT - labelMarginTop;
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
+
+        settings = new SettingsSystem("gamedata", game.log);
+
+        login = TimeUtils.nanoTime();
     }
 
     @Override
@@ -104,10 +120,16 @@ public class ShopScreen implements Screen {
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
         for (int i = 0; i < menuLables.length; i++)
-            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i+1) * menuElementStep);
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
         game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
+        game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
+
+        int npos = (int) settings.get("ship", 1);
+
+        selectedX = menuLabelsX - selectedMarginRight;
+        selectedY = (int) (labelPos.y - npos * menuElementStep - menuMarginBottom);
 
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
@@ -120,15 +142,22 @@ public class ShopScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-            game.setScreen(menu);
-
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE))
-            switch (pos) {
+
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+            game.setScreen(menu);
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
+            try {
+                settings.setProperty("ship", (pos + 1));
+                game.setScreen(menu);
+            } catch (IOException e) {
+                e.printStackTrace();
+                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                Gdx.app.exit();
             }
     }
 
@@ -159,7 +188,7 @@ public class ShopScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.log.Log("Disposing results screen", LogSystem.INFO);
+        game.log.Log("Disposing difficulty level select screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
