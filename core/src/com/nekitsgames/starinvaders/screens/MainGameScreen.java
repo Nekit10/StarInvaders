@@ -248,6 +248,7 @@ public class MainGameScreen implements Screen {
                     astr.getRect().getWidth(),
                     astr.getRect().getHeight());
         }
+
         if (showFPS) {
             String fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
             glyphLayout = new GlyphLayout(game.fontData, fps);
@@ -373,6 +374,7 @@ public class MainGameScreen implements Screen {
     public void show() {
         try {
             prop.load(new FileInputStream("properties/defaults.properties"));
+            setings = new SettingsSystem("game", game.log);
         } catch (IOException e) {
             e.printStackTrace();
             game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
