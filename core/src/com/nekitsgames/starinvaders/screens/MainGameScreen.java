@@ -1,3 +1,8 @@
+/*
+* Copyright (c) 20016 - 2017, NG Tech and/or its affiliates. All rights reserved.
+* GNI GPL v3 licence . Use is subject to license terms
+*/
+
 package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -15,11 +20,10 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
-import com.nekitsgames.starinvaders.classes.Amunition;
-import com.nekitsgames.starinvaders.classes.AmunitionType;
+import com.nekitsgames.starinvaders.classes.Ammunition;
+import com.nekitsgames.starinvaders.classes.AmmunitionType;
 import com.nekitsgames.starinvaders.classes.Asteroid;
 import com.nekitsgames.starinvaders.classes.AsteroidType;
-import com.nekitsgames.starinvaders.screens.settings.SettingsScreen;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +31,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
+/**
+ * Main game screen
+ *
+ * @author Nikita Serba
+ * @version 5.0
+ * @since 1.1
+ */
 public class MainGameScreen implements Screen {
 
     private OrthographicCamera camera;
@@ -60,8 +71,8 @@ public class MainGameScreen implements Screen {
 
     private static int current_amunition = 0;
     private static int amunition_count;
-    private static ArrayList<Amunition> amunitions;
-    private static AmunitionType[] amunitionTypes;
+    private static ArrayList<Ammunition> ammunitions;
+    private static AmmunitionType[] ammunitionTypes;
 
     private int hearthHeight;
     private int hearthWidth;
@@ -82,6 +93,13 @@ public class MainGameScreen implements Screen {
 
     private static String lazer_texture;
 
+    /**
+     * Init game screen
+     *
+     * @since 1.1
+     * @param game - game class
+     * @throws IOException if can't read properties
+     */
     public MainGameScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing main game screen", LogSystem.INFO);
 
@@ -111,9 +129,9 @@ public class MainGameScreen implements Screen {
 
         prop.load(new FileInputStream("properties/amunition.properties"));
         amunition_count = Integer.parseInt(prop.getProperty("amunition.count"));
-        amunitionTypes = new AmunitionType[amunition_count];
+        ammunitionTypes = new AmmunitionType[amunition_count];
         for (int i = 0; i < amunition_count; i++) {
-            amunitionTypes[i] = new AmunitionType(
+            ammunitionTypes[i] = new AmmunitionType(
                     Double.parseDouble(prop.getProperty("amunition." + (i + 1) + ".width")),
                     Double.parseDouble(prop.getProperty("amunition." + (i + 1) + ".height")),
                     Double.parseDouble(prop.getProperty("amunition." + (i + 1) + ".step")),
@@ -200,17 +218,31 @@ public class MainGameScreen implements Screen {
 
         spawnAsteroids(asteroids, typies);
 
-        amunitions = new ArrayList<>();
+        ammunitions = new ArrayList<>();
 
         hp = 100;
     }
 
-    private void spawnLazer(int x, int y) {
-        amunitions.add(new Amunition(amunitionTypes[current_amunition], x, y));
-        amunitionTypes[current_amunition].setLast(TimeUtils.nanoTime());
-        amunitionTypes[current_amunition].getStartSound().play();
+    /**
+     * Spawn new ammunition
+     *
+     * @since 1.1
+     * @param x - new ammunition X position
+     * @param y - new ammunition Y position
+     */
+    private void spawnAmmunition(int x, int y) {
+        ammunitions.add(new Ammunition(ammunitionTypes[current_amunition], x, y));
+        ammunitionTypes[current_amunition].setLast(TimeUtils.nanoTime());
+        ammunitionTypes[current_amunition].getStartSound().play();
     }
 
+    /**
+     * Spawn new asteroid
+     *
+     * @since 1.1
+     * @param astrs
+     * @param typs
+     */
     private void spawnAsteroids(ArrayList<Asteroid> astrs, AsteroidType[] typs) {
         for (AsteroidType type : typs) {
             if (TimeUtils.nanoTime() - type.getLast_spawn() > type.getSpawn_after()) {
@@ -220,12 +252,23 @@ public class MainGameScreen implements Screen {
         }
     }
 
-
+    /**
+     * Die
+     *
+     * @since 1.1
+     * @throws IOException if can't access properties files
+     */
     private void die() throws IOException {
         game.setScreen(new GameEndScreen(game, distance));
         dispose();
     }
 
+    /**
+     * Render game
+     *
+     * @since 1.1
+     * @param delta - delta time
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -237,12 +280,12 @@ public class MainGameScreen implements Screen {
 
         game.batch.begin();
         game.batch.draw(shipImage, shipRect.x, shipRect.y, shipRect.getWidth(), shipRect.getHeight());
-        for (Amunition lazerRect : amunitions) {
+        for (Ammunition lazerRect : ammunitions) {
             game.batch.draw(lazerRect.getType().getMainTexture(), lazerRect.getRect().x, lazerRect.getRect().y, lazerRect.getRect().getWidth(), lazerRect.getRect().getHeight());
         }
         for (Asteroid astr : asteroids) {
             game.batch.draw(
-                    astr.getType().getTexture()[astr.getTexture()],
+                    astr.getType().getTextures()[astr.getTexture()],
                     astr.getRect().x,
                     astr.getRect().y,
                     astr.getRect().getWidth(),
@@ -280,12 +323,12 @@ public class MainGameScreen implements Screen {
             shipRect.x = game.WIDTH - SHIP_WIDTH;
         if (shipRect.x < 0)
             shipRect.x = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) & TimeUtils.nanoTime() - amunitionTypes[current_amunition].getLast() > amunitionTypes[current_amunition].getWait_time())
-            spawnLazer((int) (shipRect.x + SHIP_WIDTH / 2), (int) (shipRect.y + SHIP_HEIGHT));
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) & TimeUtils.nanoTime() - ammunitionTypes[current_amunition].getLast() > ammunitionTypes[current_amunition].getWait_time())
+            spawnAmmunition((int) (shipRect.x + SHIP_WIDTH / 2), (int) (shipRect.y + SHIP_HEIGHT));
 
         ArrayList<Integer> rm1 = new ArrayList<>();
 
-        for (Amunition amun: amunitions) {
+        for (Ammunition amun: ammunitions) {
             amun.getRect().y += amun.getType().getStep() * Gdx.graphics.getDeltaTime();
             ArrayList<Integer> rm = new ArrayList<>();
             for (Asteroid astr : asteroids)
@@ -295,14 +338,14 @@ public class MainGameScreen implements Screen {
                         rm.add(asteroids.indexOf(astr)); else
                         astr.setTexture(astr.getTexture() + 1);
 
-                        rm1.add(amunitions.indexOf(amun));
+                        rm1.add(ammunitions.indexOf(amun));
                 }
             for (int i : rm)
                 asteroids.remove(i);
         }
 
         for (int i : rm1)
-            amunitions.remove(i);
+            ammunitions.remove(i);
 
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
             try {
@@ -352,6 +395,11 @@ public class MainGameScreen implements Screen {
     }
 
 
+    /**
+     * Clean
+     *
+     * @since 1.1
+     */
     @Override
     public void dispose() {
         game.log.Log("Disposing main game screen", LogSystem.INFO);
@@ -370,6 +418,11 @@ public class MainGameScreen implements Screen {
         typies = null;
     }
 
+    /**
+     * Show screen
+     *
+     * @since 1.1
+     */
     @Override
     public void show() {
         try {
@@ -384,21 +437,43 @@ public class MainGameScreen implements Screen {
         game.log.Log("Show FPS - " + showFPS, LogSystem.INFO);
     }
 
+    /**
+     * Resize sgame
+     *
+     * @since 1.1
+     * @param width - new width
+     * @param height - new height
+     */
     @Override
     public void resize(int width, int height) {
 
     }
 
+    /**
+     * Pause game
+     *
+     * @since 1.1
+     */
     @Override
     public void pause() {
 
     }
 
+    /**
+     * Resume game
+     *
+     * @since 1.1
+     */
     @Override
     public void resume() {
 
     }
 
+    /**
+     * Hide game
+     *
+     * @since 1.1
+     */
     @Override
     public void hide() {
 

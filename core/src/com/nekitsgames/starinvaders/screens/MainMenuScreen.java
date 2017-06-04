@@ -1,3 +1,8 @@
+/*
+* Copyright (c) 20016 - 2017, NG Tech and/or its affiliates. All rights reserved.
+* GNI GPL v3 licence . Use is subject to license terms
+*/
+
 package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -19,6 +24,13 @@ import com.nekitsgames.starinvaders.screens.settings.ShipScreen;
 import java.io.*;
 import java.util.Properties;
 
+/**
+ * Main menu screen
+ *
+ * @author Nikita Serba
+ * @version 3.0
+ * @since 1.1
+ */
 public class MainMenuScreen implements Screen {
 
     private StarInvaders game;
@@ -56,6 +68,13 @@ public class MainMenuScreen implements Screen {
 
     private long login;
 
+    /**
+     * Init main menu screen
+     *
+     * @since 1.1
+     * @param game - game class
+     * @throws IOException if can't access properties files
+     */
     public MainMenuScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing main menu", LogSystem.INFO);
 
@@ -101,6 +120,12 @@ public class MainMenuScreen implements Screen {
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
     }
 
+    /**
+     * Render main menu screen
+     *
+     * @since 1.1
+     * @param delta - delta time
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -172,6 +197,11 @@ public class MainMenuScreen implements Screen {
             }
     }
 
+    /**
+     * Show main menu screen
+     *
+     * @since 1.1
+     */
     @Override
     public void show() {
         login = TimeUtils.nanoTime();
@@ -179,26 +209,53 @@ public class MainMenuScreen implements Screen {
         menuMusic.play();
     }
 
+    /**
+     * Resize main menu screen
+     *
+     * @since 1.1
+     * @param width - new width
+     * @param height - new height
+     */
     @Override
     public void resize(int width, int height) {
 
     }
 
+    /**
+     * Pause main menu screen
+     *
+     * @since 1.1
+     */
     @Override
     public void pause() {
 
     }
 
+    /**
+     * Resume main menu screen
+     *
+     * @since 1.1
+     */
     @Override
     public void resume() {
 
     }
 
+    /**
+     * Hide main menu screen
+     *
+     * @since 1.1
+     */
     @Override
     public void hide() {
 
     }
 
+    /**
+     * Clean
+     *
+     * @since 1.1
+     */
     @Override
     public void dispose() {
         game.log.Log("Disposing main menu", LogSystem.INFO);

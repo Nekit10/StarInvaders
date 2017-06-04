@@ -1,3 +1,8 @@
+/*
+* Copyright (c) 20016 - 2017, NG Tech and/or its affiliates. All rights reserved.
+* GNI GPL v3 licence . Use is subject to license terms
+*/
+
 package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -17,6 +22,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Game end screen
+ *
+ * @author Nikita Serba
+ * @version 1.0
+ * @since 1.1
+ */
 public class GameEndScreen implements Screen {
 
     private StarInvaders game;
@@ -54,6 +66,14 @@ public class GameEndScreen implements Screen {
     private String distan;
     private int disX, disY;
 
+    /**
+     * Init game end screen
+     *
+     * @since 1.1
+     * @param game - game class
+     * @param dis - distance
+     * @throws IOException if can't access properties files
+     */
     public GameEndScreen(StarInvaders game, int dis) throws IOException {
         game.log.Log("Initializing game end screen", LogSystem.INFO);
 
@@ -102,6 +122,12 @@ public class GameEndScreen implements Screen {
         disY = (int) (labelPos.y - 100 - glyphLayout.height);
     }
 
+    /**
+     * Render game end screen
+     *
+     * @since 1.1
+     * @param delta - delta time
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -163,31 +189,63 @@ public class GameEndScreen implements Screen {
             }
     }
 
+    /**
+     * Show screen
+     *
+     * @since 1.1
+     */
     @Override
     public void show() {
 
     }
 
+    /**
+     * Resize screen
+     *
+     * @since 1.1
+     * @param width - new screen width
+     * @param height - new screen height
+     */
     @Override
     public void resize(int width, int height) {
 
     }
 
+    /**
+     * Pause screen
+     *
+     * @since 1.1
+     */
     @Override
     public void pause() {
 
     }
 
+    /**
+     * Resume screen
+     *
+     * @since 1.1
+     */
     @Override
     public void resume() {
 
     }
 
+    /**
+     * Hide screen
+     *
+     * @since 1.1
+     */
     @Override
     public void hide() {
 
     }
 
+    /**
+     * Clean
+     *
+     * @since 1.1
+     */
     @Override
     public void dispose() {
         game.log.Log("Disposing game end screen", LogSystem.INFO);

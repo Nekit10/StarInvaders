@@ -1,3 +1,8 @@
+/*
+* Copyright (c) 20016 - 2017, NG Tech and/or its affiliates. All rights reserved.
+* GNI GPL v3 licence . Use is subject to license terms
+*/
+
 package com.nekitsgames.starinvaders.screens;
 
 import com.badlogic.gdx.Gdx;
@@ -17,6 +22,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Pause screen
+ *
+ * @author Nikita Serba
+ * @version 1.0
+ * @since 1.1
+ */
 public class PauseScreen implements Screen {
 
     private StarInvaders game;
@@ -50,6 +62,14 @@ public class PauseScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
+    /**
+     * Init pause screen
+     *
+     * @since 1.1
+     * @param game - game class
+     * @param mainGameScreen - main game screen class
+     * @throws IOException if can't access properties files
+     */
     public PauseScreen(StarInvaders game, MainGameScreen mainGameScreen) throws IOException {
         game.log.Log("Initializing pause screen", LogSystem.INFO);
 
@@ -91,6 +111,12 @@ public class PauseScreen implements Screen {
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
     }
 
+    /**
+     * Render pause screen
+     *
+     * @since 1.1
+     * @param delta - delta time
+     */
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
@@ -146,31 +172,63 @@ public class PauseScreen implements Screen {
             }
     }
 
+    /**
+     * Screen show
+     *
+     * @since 1.1
+     */
     @Override
     public void show() {
 
     }
 
+    /**
+     * Screen resize
+     *
+     * @since 1.1
+     * @param width - new screen with
+     * @param height - new screen height
+     */
     @Override
     public void resize(int width, int height) {
 
     }
 
+    /**
+     * Screen pause
+     *
+     * @since 1.1
+     */
     @Override
     public void pause() {
 
     }
 
+    /**
+     * Screen resume
+     *
+     * @since 1.1
+     */
     @Override
     public void resume() {
 
     }
 
+    /**
+     * Screen hide
+     *
+     * @since 1.1
+     */
     @Override
     public void hide() {
 
     }
 
+    /**
+     * Clean
+     *
+     * @since 1.1
+     */
     @Override
     public void dispose() {
         game.log.Log("Disposing pause screen", LogSystem.INFO);

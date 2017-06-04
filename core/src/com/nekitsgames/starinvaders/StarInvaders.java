@@ -1,3 +1,7 @@
+/*
+* Copyright (c) 20016 - 2017, NG Tech and/or its affiliates. All rights reserved.
+* GNI GPL v3 licence . Use is subject to license terms
+*/
 package com.nekitsgames.starinvaders;
 
 import com.badlogic.gdx.Game;
@@ -15,6 +19,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ *  Runs game code.
+ *
+ *  @author Nikita Serba
+ *  @version 2.0
+ *  @since 1.0
+ */
 public class StarInvaders extends Game {
 
     public SpriteBatch batch;
@@ -40,6 +51,11 @@ public class StarInvaders extends Game {
     public int WIDTH;
     public int HEIGHT;
 
+    /**
+     * Setting up fonts, loading log system, running game.
+     *
+     * @since 1.0
+     */
     @Override
     public void create() {
         try {
@@ -108,11 +124,21 @@ public class StarInvaders extends Game {
         }
     }
 
+    /**
+     * Running game rendering.
+     *
+     * @since 1.0
+     */
     @Override
     public void render() {
         super.render();
     }
 
+    /**
+     * Cleaning.
+     *
+     * @since 1.0
+     */
     @Override
     public void dispose() {
         super.dispose();

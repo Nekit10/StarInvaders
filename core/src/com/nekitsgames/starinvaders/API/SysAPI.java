@@ -1,3 +1,8 @@
+/*
+* Copyright (c) 20016 - 2017, NG Tech and/or its affiliates. All rights reserved.
+* GNI GPL v3 licence . Use is subject to license terms
+*/
+
 package com.nekitsgames.starinvaders.API;
 
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
@@ -10,6 +15,15 @@ import java.nio.file.Paths;
 import java.util.Locale;
 import java.util.Properties;
 
+/**
+ * System API.
+ *
+ * Contains cross-platform methods
+ *
+ * @author Nikita Serba
+ * @version 1.0
+ * @since 1.3
+ */
 public class SysAPI {
 
     public static final int WINDOWS = 0;
@@ -17,6 +31,14 @@ public class SysAPI {
     public static final int SOLARIS = 2;
     public static final int OTHER = 3;
 
+
+    /**
+     * Get os name
+     *
+     * @since 1.3
+     * @param log - log class
+     * @return os code
+     */
     public static int getOs(LogSystem log) {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if (OS.indexOf("win") >= 0) {
@@ -31,6 +53,12 @@ public class SysAPI {
         }
     }
 
+    /**
+     * Analog of getOs(LogSystem l) without log system
+     *
+     * @since 1.3
+     * @return os code
+     */
     private static int getOs() {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if (OS.indexOf("win") >= 0) {
@@ -44,6 +72,14 @@ public class SysAPI {
         }
     }
 
+    /**
+     * Get settings folder by OS
+     *
+     * @since 1.3
+     * @param log - log class
+     * @return full folder path
+     * @throws IOException if can't access files on drive
+     */
     public static String getSettingsFolder(LogSystem log) throws IOException {
         Properties prop = new Properties();
         prop.load(new FileInputStream("properties/main.properties"));
@@ -68,7 +104,13 @@ public class SysAPI {
         return pathStr;
     }
 
-
+    /**
+     * Analog of getSettingsFolder(LogSystem l) without log system
+     *
+     * @since 1.3
+     * @return full folder path
+     * @throws IOException if can't access files on drive
+     */
     public static String getSettingsFolder() throws IOException {
         Properties prop = new Properties();
         prop.load(new FileInputStream("properties/main.properties"));
