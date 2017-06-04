@@ -18,7 +18,7 @@ import java.util.Properties;
  * Log API
  *
  * @author Nikita Serba
- * @version 1.0
+ * @version 1.1
  * @since 1.3
  */
 public class LogSystem {
@@ -29,6 +29,7 @@ public class LogSystem {
     public static final String INFO = "INFO";
     public static final String WARN = "WARN";
     public static final String ERROR = "ERR";
+    public static final String FATAL = "FATAL";
 
     /**
      * Loading properties and creating class
@@ -55,10 +56,14 @@ public class LogSystem {
         DateFormat dateFormat = new SimpleDateFormat(prop.getProperty("data.format"));
         Date date = new Date();
         String logStr = "{" + dateFormat.format(date) + "}[" + type + "] " + msg;
-        if (type == ERROR)
+        if (type.equals(ERROR) || type.equals(FATAL))
             System.err.println(logStr);
         else
             System.out.println(logStr);
+
+        if (type.equals(FATAL)) {
+            System.exit(-1);
+        }
         printer.println(logStr);
 
         dateFormat = null;
