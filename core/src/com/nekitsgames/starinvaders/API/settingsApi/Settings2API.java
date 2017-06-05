@@ -44,7 +44,7 @@ public class Settings2API {
             new File(SysAPI.getSettingsFolder()).mkdirs();
             settingsFile = new File(file);
         } catch (IOException e) {
-            throw new SettingsAccessException("Can't access/create settings file: " + file, e.getCause());
+            throw new SettingsAccessException("Can't access/create ("+ e.getMessage() +") settings file: " + file, e.getCause());
         }
 
         if (settingsFile.exists() && !settingsFile.canWrite())
@@ -67,7 +67,7 @@ public class Settings2API {
                 cache = new JSONObject();
             }
         } catch (IOException e) {
-            throw new SettingsAccessException("Can't access/create settings file: " + file, e.getCause());
+            throw new SettingsAccessException("Can't access/create ("+ e.getMessage() +") settings file: " + file, e.getCause());
         }
 
     }
@@ -115,7 +115,7 @@ public class Settings2API {
             writer.write(json);
             writer.close();
         } catch (IOException e) {
-            throw new SettingsAccessException("Can't save settings to file: " + settingsFile.getAbsolutePath(), e.getCause());
+            throw new SettingsAccessException("Can't access/create ("+ e.getMessage() +") settings file: " + settingsFile.getAbsolutePath(), e.getCause());
         }
     }
 
