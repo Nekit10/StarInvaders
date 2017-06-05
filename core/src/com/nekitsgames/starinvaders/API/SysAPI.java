@@ -21,7 +21,7 @@ import java.util.Properties;
  * Contains cross-platform methods
  *
  * @author Nikita Serba
- * @version 1.1
+ * @version 1.2
  * @since 1.3
  */
 public class SysAPI {
@@ -137,6 +137,20 @@ public class SysAPI {
         pathP = null;
 
         return pathStr;
+    }
+
+    /**
+     * Get path for temp files
+     *
+     * @since 2.1
+     * @return path to temp folder
+     */
+    public static String getTempFolder () {
+        if (getOs() == WINDOWS) {
+            return System.getenv("%TEMP%") + "\\NG Tech\\Star Invaders\\2.0\\";
+        } else {
+            return "/tmp/NG Tech/Star Invaders/2.0";
+        }
     }
 
 }
