@@ -271,126 +271,126 @@ public class MainGameScreen implements Screen {
      */
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        try {
+            Gdx.gl.glClearColor(0, 0, 0, 1);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        camera.update();
+            camera.update();
 
-        game.batch.setProjectionMatrix(camera.combined);
+            game.batch.setProjectionMatrix(camera.combined);
 
-        game.batch.begin();
-        game.batch.draw(shipImage, shipRect.x, shipRect.y, shipRect.getWidth(), shipRect.getHeight());
-        for (Ammunition lazerRect : ammunitions) {
-            game.batch.draw(lazerRect.getType().getMainTexture(), lazerRect.getRect().x, lazerRect.getRect().y, lazerRect.getRect().getWidth(), lazerRect.getRect().getHeight());
-        }
-        for (Asteroid astr : asteroids) {
-            game.batch.draw(
-                    astr.getType().getTextures()[astr.getTexture()],
-                    astr.getRect().x,
-                    astr.getRect().y,
-                    astr.getRect().getWidth(),
-                    astr.getRect().getHeight());
-        }
+            game.batch.begin();
+            game.batch.draw(shipImage, shipRect.x, shipRect.y, shipRect.getWidth(), shipRect.getHeight());
+            for (Ammunition lazerRect : ammunitions) {
+                game.batch.draw(lazerRect.getType().getMainTexture(), lazerRect.getRect().x, lazerRect.getRect().y, lazerRect.getRect().getWidth(), lazerRect.getRect().getHeight());
+            }
+            for (Asteroid astr : asteroids) {
+                game.batch.draw(
+                        astr.getType().getTextures()[astr.getTexture()],
+                        astr.getRect().x,
+                        astr.getRect().y,
+                        astr.getRect().getWidth(),
+                        astr.getRect().getHeight());
+            }
 
-        if (showFPS) {
-            String fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
-            glyphLayout = new GlyphLayout(game.fontData, fps);
-            game.fontData.draw(game.batch, fps, game.WIDTH - glyphLayout.width, game.HEIGHT - glyphLayout.height);
-        }
+            if (showFPS) {
+                String fps = FPSLabel.replace("%FPS%", "" + Gdx.graphics.getFramesPerSecond());
+                glyphLayout = new GlyphLayout(game.fontData, fps);
+                game.fontData.draw(game.batch, fps, game.WIDTH - glyphLayout.width, game.HEIGHT - glyphLayout.height);
+            }
 
-        game.batch.draw(hearthImage, 0, game.HEIGHT - hearthHeight, hearthWidth, hearthHeight);
+            game.batch.draw(hearthImage, 0, game.HEIGHT - hearthHeight, hearthWidth, hearthHeight);
 
-        String hps = hp + "%";
-        glyphLayout = new GlyphLayout(game.fontData, hps);
-        game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
+            String hps = hp + "%";
+            glyphLayout = new GlyphLayout(game.fontData, hps);
+            game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
 
-        String dis = distance + " m";
+            String dis = distance + " m";
 
-        game.fontData.draw(game.batch, dis, 0, 0);
-        game.batch.end();
+            game.fontData.draw(game.batch, dis, 0, 0);
+            game.batch.end();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_1))
-            current_amunition = 0;
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1))
+                current_amunition = 0;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.NUM_2))
-            current_amunition = 1;
+            if (Gdx.input.isKeyPressed(Input.Keys.NUM_2))
+                current_amunition = 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
-            shipRect.x -= SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
-            shipRect.x += SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
-        if (shipRect.x > game.WIDTH - SHIP_WIDTH)
-            shipRect.x = game.WIDTH - SHIP_WIDTH;
-        if (shipRect.x < 0)
-            shipRect.x = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE) & TimeUtils.nanoTime() - ammunitionTypes[current_amunition].getLast() > ammunitionTypes[current_amunition].getWait_time())
-            spawnAmmunition((int) (shipRect.x + SHIP_WIDTH / 2), (int) (shipRect.y + SHIP_HEIGHT));
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
+                shipRect.x -= SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
+            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT))
+                shipRect.x += SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
+            if (shipRect.x > game.WIDTH - SHIP_WIDTH)
+                shipRect.x = game.WIDTH - SHIP_WIDTH;
+            if (shipRect.x < 0)
+                shipRect.x = 0;
+            if (Gdx.input.isKeyPressed(Input.Keys.SPACE) & TimeUtils.nanoTime() - ammunitionTypes[current_amunition].getLast() > ammunitionTypes[current_amunition].getWait_time())
+                spawnAmmunition((int) (shipRect.x + SHIP_WIDTH / 2), (int) (shipRect.y + SHIP_HEIGHT));
 
-        ArrayList<Integer> rm1 = new ArrayList<>();
+            ArrayList<Integer> rm1 = new ArrayList<>();
 
-        for (Ammunition amun: ammunitions) {
-            amun.getRect().y += amun.getType().getStep() * Gdx.graphics.getDeltaTime();
-            ArrayList<Integer> rm = new ArrayList<>();
-            for (Asteroid astr : asteroids)
-                if (amun.getRect().overlaps(astr.getRect()) && astr.getType().isKillable()) {
-                    astr.setHp(astr.getHp() - amun.getType().getHp_asteroid());
-                    if (astr.getHp() <= 0)
-                        rm.add(asteroids.indexOf(astr)); else
-                        astr.setTexture(astr.getTexture() + 1);
+            for (Ammunition amun : ammunitions) {
+                amun.getRect().y += amun.getType().getStep() * Gdx.graphics.getDeltaTime();
+                ArrayList<Integer> rm = new ArrayList<>();
+                for (Asteroid astr : asteroids)
+                    if (amun.getRect().overlaps(astr.getRect()) && astr.getType().isKillable()) {
+                        astr.setHp(astr.getHp() - amun.getType().getHp_asteroid());
+                        if (astr.getHp() <= 0)
+                            rm.add(asteroids.indexOf(astr));
+                        else
+                            astr.setTexture(astr.getTexture() + 1);
 
                         rm1.add(ammunitions.indexOf(amun));
+                    }
+                for (int i : rm)
+                    asteroids.remove(i);
+            }
+
+            for (int i : rm1)
+                ammunitions.remove(i);
+
+            if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+                try {
+                    game.setScreen(new PauseScreen(game, this));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                    Gdx.app.exit();
                 }
-            for (int i : rm)
+
+            spawnAsteroids(asteroids, typies);
+
+            ArrayList<Integer> indexes = new ArrayList<>();
+
+            for (Asteroid astr : asteroids) {
+                astr.getRect().setPosition(
+                        astr.getRect().x,
+                        astr.getRect().y - astr.getType().getStep() * Gdx.graphics.getDeltaTime()
+                );
+                if (astr.getRect().y < 0 - astr.getType().getHeight())
+                    indexes.add(asteroids.indexOf(astr));
+                if (astr.getRect().overlaps(shipRect)) {
+                    hp -= astr.getType().getDamage() * (100 - ship_armour / 3) / 100;
+                    indexes.add(asteroids.indexOf(astr));
+                }
+            }
+
+            for (int i : indexes)
                 asteroids.remove(i);
-        }
 
-        for (int i : rm1)
-            ammunitions.remove(i);
-
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-            try {
-                game.setScreen(new PauseScreen(game, this));
-            } catch (IOException e) {
-                e.printStackTrace();
-                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                Gdx.app.exit();
+            if (TimeUtils.nanoTime() - lastDis > 53333333) {
+                distance++;
+                lastDis = TimeUtils.nanoTime();
             }
 
-        spawnAsteroids(asteroids, typies);
-
-        ArrayList<Integer> indexes = new ArrayList<>();
-
-        for (Asteroid astr : asteroids) {
-            astr.getRect().setPosition(
-                    astr.getRect().x,
-                    astr.getRect().y - astr.getType().getStep() * Gdx.graphics.getDeltaTime()
-            );
-            if (astr.getRect().y < 0 - astr.getType().getHeight())
-                indexes.add(asteroids.indexOf(astr));
-            if (astr.getRect().overlaps(shipRect)) {
-                hp -= astr.getType().getDamage() * (100 - ship_armour / 3) / 100;
-                indexes.add(asteroids.indexOf(astr));
-            }
+            if (hp <= 0)
+                    die();
+            if (hp > 200)
+                hp = 200;
+        } catch (Exception e) {
+            e.printStackTrace();
+            game.log.Log("Error: " + e.getMessage(), LogSystem.FATAL);
         }
-
-        for (int i : indexes)
-            asteroids.remove(i);
-
-        if (TimeUtils.nanoTime() - lastDis > 53333333) {
-            distance++;
-            lastDis = TimeUtils.nanoTime();
-        }
-
-        if (hp <= 0)
-            try {
-                die();
-            } catch (IOException e) {
-                e.printStackTrace();
-                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                Gdx.app.exit();
-            }
-        if (hp > 200)
-            hp = 200;
 
     }
 

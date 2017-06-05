@@ -145,8 +145,14 @@ public class StarInvaders extends Game {
         batch.dispose();
         fontMain.dispose();
         fontLabel.dispose();
-        log = null;
         setings.dispose();
         setings = null;
+        try {
+            log.save();
+            log.dispose();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        log = null;
     }
 }
