@@ -21,7 +21,7 @@ import java.util.Properties;
  * Contains cross-platform methods
  *
  * @author Nikita Serba
- * @version 1.0
+ * @version 1.1
  * @since 1.3
  */
 public class SysAPI {
@@ -35,10 +35,12 @@ public class SysAPI {
     /**
      * Get os name
      *
+     * @deprecated since 2.1, use getOs() instead
      * @since 1.3
      * @param log - log class
      * @return os code
      */
+    @Deprecated
     public static int getOs(LogSystem log) {
         String OS = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
         if (OS.indexOf("win") >= 0) {
@@ -54,7 +56,7 @@ public class SysAPI {
     }
 
     /**
-     * Analog of getOs(LogSystem l) without log system
+     * Get os name
      *
      * @since 1.3
      * @return os code
@@ -75,11 +77,13 @@ public class SysAPI {
     /**
      * Get settings folder by OS
      *
+     * @deprecated since 2.1
      * @since 1.3
      * @param log - log class
      * @return full folder path
      * @throws IOException if can't access files on drive
      */
+    @Deprecated
     public static String getSettingsFolder(LogSystem log) throws IOException {
         Properties prop = new Properties();
         prop.load(new FileInputStream("properties/main.properties"));
@@ -105,7 +109,7 @@ public class SysAPI {
     }
 
     /**
-     * Analog of getSettingsFolder(LogSystem l) without log system
+     * Get settings folder by OS
      *
      * @since 1.3
      * @return full folder path
