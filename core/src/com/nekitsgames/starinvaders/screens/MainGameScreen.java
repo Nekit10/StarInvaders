@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
@@ -70,8 +69,6 @@ public class MainGameScreen implements Screen {
     private Texture hearthImage;
     private Music spaceSound;
     private Rectangle shipRect;
-    private Rectangle rect;
-    private Vector3 touchPos;
     private Iterator<Rectangle> iterator;
     private int hearthHeight;
     private int hearthWidth;
@@ -146,10 +143,6 @@ public class MainGameScreen implements Screen {
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
-
-        touchPos = new Vector3();
-
-        rect = new Rectangle();
 
         SHIP_X = game.WIDTH / 2 - SHIP_WIDTH / 2;
 
@@ -261,6 +254,9 @@ public class MainGameScreen implements Screen {
             game.batch.setProjectionMatrix(camera.combined);
 
             game.batch.begin();
+            String dis = distance + " m";
+            game.fontData.draw(game.batch, dis, (float) (game.HEIGHT * 0.037037), (float) (game.WIDTH * 0.02604));
+
             game.batch.draw(shipImage, shipRect.x, shipRect.y, shipRect.getWidth(), shipRect.getHeight());
             for (Ammunition lazerRect : ammunitions) {
                 game.batch.draw(lazerRect.getType().getMainTexture(), lazerRect.getRect().x, lazerRect.getRect().y, lazerRect.getRect().getWidth(), lazerRect.getRect().getHeight());
@@ -286,9 +282,6 @@ public class MainGameScreen implements Screen {
             glyphLayout = new GlyphLayout(game.fontData, hps);
             game.fontData.draw(game.batch, hps, hearthWidth + 20, game.HEIGHT - (hearthHeight - glyphLayout.height) / 1.5f);
 
-            String dis = distance + " m";
-
-            game.fontData.draw(game.batch, dis, 0, 0);
             game.batch.end();
 
             if (Gdx.input.isKeyPressed(Input.Keys.NUM_1))
@@ -392,8 +385,6 @@ public class MainGameScreen implements Screen {
         spaceSound.dispose();
         spaceSound = null;
         shipRect = null;
-        rect = null;
-        touchPos = null;
         iterator = null;
         asteroids = null;
         typies = null;
