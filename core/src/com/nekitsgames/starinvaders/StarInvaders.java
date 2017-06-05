@@ -78,14 +78,15 @@ public class StarInvaders extends Game {
             HEIGHT = (int) settingsMain.get("resolution.height", Integer.parseInt(prop.getProperty("settings.resolution.height")));
 
 
-            boolean isRussian = settingsMain.get("lang", "us").equals("ru");
+            prop.load(new FileInputStream("properties/strings." + settingsMain.get("lang", "us") + ".properties"));
+            boolean isKyrylic = Integer.valueOf((String) prop.get("lang.kyr")) == 1;
 
             prop.load(new FileInputStream("properties/main.properties"));
             fontPath = prop.getProperty("dir.fonts");
-            if (isRussian)
+            if (isKyrylic)
                 mainFont = prop.getProperty("main.font.ru"); else
                 mainFont = prop.getProperty("main.font");
-            if (isRussian)
+            if (isKyrylic)
                 labelFont = prop.getProperty("label.font.ru"); else
                 labelFont = prop.getProperty("label.font");
             dataFont = prop.getProperty("data.font");
@@ -100,7 +101,7 @@ public class StarInvaders extends Game {
             //Init main font
             FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontPath + mainFont));
             FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-            if (isRussian)
+            if (isKyrylic)
                 parameter.characters = RUSSIAN_CHARACTERS;
             parameter.size = mainFontSize;
             fontMain = generator.generateFont(parameter); // fontMain size 12 pixels
@@ -108,7 +109,7 @@ public class StarInvaders extends Game {
             //Init labelFont
             generator = new FreeTypeFontGenerator(Gdx.files.internal(fontPath + labelFont));
             parameter = new FreeTypeFontParameter();
-            if (isRussian)
+            if (isKyrylic)
                 parameter.characters = RUSSIAN_CHARACTERS;
             parameter.size = labelFontSize;
             fontLabel = generator.generateFont(parameter);
