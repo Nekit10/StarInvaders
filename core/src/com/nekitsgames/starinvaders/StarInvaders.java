@@ -121,6 +121,8 @@ public class StarInvaders extends Game {
             fontData = generator.generateFont(parameter);
 
             generator.dispose(); // don't forget to dispose to avoid memory leaks!
+
+            Gdx.input.setCursorCatched(true);
             this.setScreen(new MainMenuScreen(this));
         } catch (Exception e) {
             e.printStackTrace();
