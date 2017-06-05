@@ -101,4 +101,22 @@ public class Settings2API {
         cache.put(key, value);
     }
 
+    /**
+     * Save all settings to file
+     *
+     * @since 2.1
+     * @throws SettingsAccessException
+     */
+    public void save () throws SettingsAccessException {
+        try {
+            String json = cache.toString();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(settingsFile));
+            writer.write(json);
+            writer.close();
+        } catch (IOException e) {
+            throw new SettingsAccessException("Can't save settings to file: " + settingsFile.getAbsolutePath(), e.getCause());
+        }
+    }
+
 }
