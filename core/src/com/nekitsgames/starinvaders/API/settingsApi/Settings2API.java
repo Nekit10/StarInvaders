@@ -87,4 +87,18 @@ public class Settings2API {
             return def; else return cache.get(key);
     }
 
+    /**
+     * Set value by key
+     *
+     * @since 2.1
+     * @param key - key
+     * @param value - value to set
+     */
+    public void set (String key, Object value) {
+        if (key.isEmpty())
+            throw new NullPointerException("Key can't be null");
+
+        cache.put(key, value);
+    }
+
 }
