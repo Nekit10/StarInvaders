@@ -64,6 +64,7 @@ public class MainGameScreen implements Screen {
     private Properties prop;
     private GlyphLayout glyphLayout;
     private int distance;
+    private long ammunition_last;
     private long lastDis;
     private Texture shipImage;
     private Texture hearthImage;
@@ -284,11 +285,20 @@ public class MainGameScreen implements Screen {
 
             game.batch.end();
 
-            if (Gdx.input.isKeyPressed(Input.Keys.NUM_1))
-                current_amunition = 0;
+            if (Gdx.input.isKeyPressed(Input.Keys.UP) && TimeUtils.millis() - ammunition_last > 300) {
+                current_amunition++;
+                ammunition_last = TimeUtils.millis();
+            }
 
-            if (Gdx.input.isKeyPressed(Input.Keys.NUM_2))
-                current_amunition = 1;
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) && TimeUtils.millis() - ammunition_last > 300) {
+                current_amunition--;
+                ammunition_last = TimeUtils.millis();
+            }
+
+            if (current_amunition < 0)
+                current_amunition = (ammunitionTypes.length - 1);
+            if (current_amunition > (ammunitionTypes.length - 1))
+                current_amunition = 0;
 
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT))
                 shipRect.x -= SHIP_ONE_STEP_KEY * Gdx.graphics.getDeltaTime();
