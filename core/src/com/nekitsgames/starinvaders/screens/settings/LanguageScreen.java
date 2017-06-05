@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 import com.nekitsgames.starinvaders.classes.Language;
 
@@ -20,22 +19,16 @@ import java.util.Properties;
 
 public class LanguageScreen implements Screen {
 
+    private static String label;
+    private static Language[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
-
-    private static String label;
     private Rectangle selectedRect;
-
-    private static Language[] menuLables;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private int pos = 0;
@@ -62,12 +55,11 @@ public class LanguageScreen implements Screen {
 
         game.log.Log("Initializing settings screen", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
 
         selectedRect = new Rectangle();
 
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("settings.lang.label");
 
@@ -131,7 +123,7 @@ public class LanguageScreen implements Screen {
         game.batch.end();
 
         int npos = 0;
-        String sym = (String) settings.get("lang", "us");
+        String sym = (String) game.settingsMain.get("lang", "us");
 
         try {
             prop.load(new FileInputStream("properties/strings." + sym + ".properties"));
@@ -172,7 +164,7 @@ public class LanguageScreen implements Screen {
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) & TimeUtils.nanoTime() - login > 500000000)
             try {
-                settings.setProperty("lang", menuLables[pos].getSym());
+                game.settingsMain.set("lang", menuLables[pos].getSym());
                 game.setScreen(new RestartScreen(game, menu));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -216,8 +208,6 @@ public class LanguageScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
-        settings.dispose();
-        settings = null;
     }
 
 }

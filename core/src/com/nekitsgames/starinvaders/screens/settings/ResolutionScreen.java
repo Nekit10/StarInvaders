@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
@@ -19,22 +18,16 @@ import java.util.Properties;
 
 public class ResolutionScreen implements Screen {
 
+    private static String label;
+    private static String[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
-
-    private static String label;
-
-    private static String[] menuLables;
     private Rectangle selectedRect;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private int pos = 0;
@@ -62,12 +55,11 @@ public class ResolutionScreen implements Screen {
 
         game.log.Log("Initializing Screen Resolution select screen", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
 
         selectedRect = new Rectangle();
 
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("settings.res.label");
         menuLables = prop.getProperty("settings.res.elements").split(";");
@@ -117,7 +109,7 @@ public class ResolutionScreen implements Screen {
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
         int j = 0;
-        int f = ((int) pos / 6) * 6;
+        int f = (pos / 6) * 6;
 
         for (int i = f; i < (((f + 6) > menuLables.length) ? menuLables.length: (f + 6)); i++) {
             game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (j + 1) * menuElementStep);
@@ -130,7 +122,7 @@ public class ResolutionScreen implements Screen {
         game.batch.end();
 
         int npos = 0;
-        String str = String.valueOf(settings.get("resolution.width", 1920)) + "x" + String.valueOf(settings.get("resolution.height", 1080));
+        String str = String.valueOf(game.settingsMain.get("resolution.width", 1920)) + "x" + String.valueOf(game.settingsMain.get("resolution.height", 1080));
 
         for (int i = 0; i < menuLables.length; i++)
             if (menuLables[i].equals(str)) {
@@ -138,7 +130,7 @@ public class ResolutionScreen implements Screen {
                 break;
             }
 
-        there = ((int) (pos / 6)) == ((int) (npos / 6));
+        there = pos / 6 == npos / 6;
 
         selectedX = menuLabelsX - selectedMarginRight;
         selectedY = (int) (labelPos.y - ((npos % 6) + 1) * menuElementStep - menuMarginBottom);
@@ -166,8 +158,8 @@ public class ResolutionScreen implements Screen {
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000){
             try {
                 String[] res = menuLables[pos].split("x");
-                settings.setProperty("resolution.width", Integer.parseInt(res[0]));
-                settings.setProperty("resolution.height", Integer.parseInt(res[1]));
+                game.settingsMain.set("resolution.width", Integer.parseInt(res[0]));
+                game.settingsMain.set("resolution.height", Integer.parseInt(res[1]));
                 game.setScreen(new RestartScreen(game, menu));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -212,8 +204,6 @@ public class ResolutionScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
-        settings.dispose();
-        settings = null;
     }
 
 }

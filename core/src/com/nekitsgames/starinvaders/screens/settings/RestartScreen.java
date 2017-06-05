@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
@@ -19,21 +18,15 @@ import java.util.Properties;
 
 public class RestartScreen implements Screen {
 
+    private static String label;
+    private static String[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
-
-    private static String label;
-
-    private static String[] menuLables;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private int pos = 0;
@@ -57,10 +50,8 @@ public class RestartScreen implements Screen {
 
         game.log.Log("Initializing restar app screen", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
-
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("settings.restart.label");
         menuLables = prop.getProperty("settings.restart.elements").split(";");
@@ -185,8 +176,6 @@ public class RestartScreen implements Screen {
         selectedImage = null;
         labelPos = null;
         menu = null;
-        settings.dispose();
-        settings = null;
     }
 
 }

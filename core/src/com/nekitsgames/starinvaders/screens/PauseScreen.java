@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
@@ -31,22 +30,16 @@ import java.util.Properties;
  */
 public class PauseScreen implements Screen {
 
+    private static String label;
+    private static String[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private MainGameScreen mainGameScreen;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
-
-    private static String label;
-
-    private static String[] menuLables;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private String imagePath;
@@ -73,10 +66,8 @@ public class PauseScreen implements Screen {
     public PauseScreen(StarInvaders game, MainGameScreen mainGameScreen) throws IOException {
         game.log.Log("Initializing pause screen", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
-
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("pause.label");
         menuLables = prop.getProperty("pause.elements").split(";");
@@ -239,8 +230,6 @@ public class PauseScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
-        settings.dispose();
-        settings = null;
     }
 
 }

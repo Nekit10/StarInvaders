@@ -15,7 +15,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
@@ -31,21 +30,15 @@ import java.util.Properties;
  */
 public class GameEndScreen implements Screen {
 
+    private static String label;
+    private static String[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
-
-    private static String label;
-
-    private static String[] menuLables;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private int distance;
@@ -77,12 +70,10 @@ public class GameEndScreen implements Screen {
     public GameEndScreen(StarInvaders game, int dis) throws IOException {
         game.log.Log("Initializing game end screen", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
-
         this.distance = dis;
 
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("die.label");
         menuLables = prop.getProperty("die.elements").split(";");
@@ -256,8 +247,6 @@ public class GameEndScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
-        settings.dispose();
-        settings = null;
     }
 
 }

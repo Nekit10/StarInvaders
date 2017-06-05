@@ -6,13 +6,13 @@ package com.nekitsgames.starinvaders;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
+import com.nekitsgames.starinvaders.API.settingsApi.Settings2API;
+import com.nekitsgames.starinvaders.classes.Exceptions.SettingsAccessException;
 import com.nekitsgames.starinvaders.screens.MainMenuScreen;
 
 import java.io.FileInputStream;
@@ -28,17 +28,20 @@ import java.util.Properties;
  */
 public class StarInvaders extends Game {
 
+    public static final String RUSSIAN_CHARACTERS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЪЫЬЭЮЯ"
+            + "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+            + FreeTypeFontGenerator.DEFAULT_CHARS;
     public SpriteBatch batch;
     public BitmapFont fontMain;
     public BitmapFont fontLabel;
     public BitmapFont fontData;
-
-    public static final String RUSSIAN_CHARACTERS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЪЫЬЭЮЯ"
-            + "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
-            + FreeTypeFontGenerator.DEFAULT_CHARS;
-
+    public LogSystem log;
+    public Settings2API settingsGame;
+    public Settings2API settingsGameData;
+    public Settings2API settingsMain;
+    public int WIDTH;
+    public int HEIGHT;
     private Properties prop;
-    private SettingsSystem setings;
     private String fontPath;
     private String mainFont;
     private String labelFont;
@@ -46,10 +49,6 @@ public class StarInvaders extends Game {
     private int mainFontSize;
     private int labelFontSize;
     private int dataFontSize;
-    public LogSystem log;
-
-    public int WIDTH;
-    public int HEIGHT;
 
     /**
      * Setting up fonts, loading log system, running game.
@@ -64,17 +63,22 @@ public class StarInvaders extends Game {
 
             log.Log("Starting game...", LogSystem.INFO);
 
-            setings = new SettingsSystem("main", log);
+            settingsGame = new Settings2API();
+            settingsGame.load("game");
+            settingsGameData = new Settings2API();
+            settingsGameData.load("gamedata");
+            settingsMain = new Settings2API();
+            settingsMain.load("main");
 
             prop = new Properties();
 
 
             prop.load(new FileInputStream("properties/defaults.properties"));
-            WIDTH = (int) setings.get("resolution.width", Integer.parseInt(prop.getProperty("settings.resolution.width")));
-            HEIGHT = (int) setings.get("resolution.height", Integer.parseInt(prop.getProperty("settings.resolution.height")));
+            WIDTH = (int) settingsMain.get("resolution.width", Integer.parseInt(prop.getProperty("settings.resolution.width")));
+            HEIGHT = (int) settingsMain.get("resolution.height", Integer.parseInt(prop.getProperty("settings.resolution.height")));
 
 
-            boolean isRussian = setings.get("lang", "us").equals("ru");
+            boolean isRussian = settingsMain.get("lang", "us").equals("ru");
 
             prop.load(new FileInputStream("properties/main.properties"));
             fontPath = prop.getProperty("dir.fonts");
@@ -117,10 +121,9 @@ public class StarInvaders extends Game {
 
             generator.dispose(); // don't forget to dispose to avoid memory leaks!
             this.setScreen(new MainMenuScreen(this));
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-            Gdx.app.exit();
+            log.Log("Error: " + e.getMessage(), LogSystem.FATAL);
         }
     }
 
@@ -141,12 +144,17 @@ public class StarInvaders extends Game {
      */
     @Override
     public void dispose() {
+        try {
+            settingsMain.save();
+            settingsGame.save();
+            settingsGameData.save();
+        } catch (SettingsAccessException e) {
+            e.printStackTrace();
+        }
         super.dispose();
         batch.dispose();
         fontMain.dispose();
         fontLabel.dispose();
-        setings.dispose();
-        setings = null;
         try {
             log.save();
             log.dispose();
@@ -154,5 +162,6 @@ public class StarInvaders extends Game {
             e.printStackTrace();
         }
         log = null;
+
     }
 }

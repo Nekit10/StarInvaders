@@ -16,12 +16,12 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 import com.nekitsgames.starinvaders.screens.settings.SettingsScreen;
 import com.nekitsgames.starinvaders.screens.settings.ShipScreen;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -33,22 +33,16 @@ import java.util.Properties;
  */
 public class MainMenuScreen implements Screen {
 
+    private static String label;
+    private static String[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
     private Music menuMusic;
-
-    private static String label;
-
-    private static String[] menuLables;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private String selectedTexture;
@@ -78,10 +72,9 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing main menu", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
 
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("menu.label");
         menuLables = prop.getProperty("menu.elements").split(";");
@@ -268,8 +261,6 @@ public class MainMenuScreen implements Screen {
         labelPos = null;
         menuMusic.dispose();
         menuMusic = null;
-        settings.dispose();
-        settings = null;
     }
 
 }

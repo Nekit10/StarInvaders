@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
@@ -19,22 +18,16 @@ import java.util.Properties;
 
 public class FPSLimitScreen implements Screen {
 
+    private static String label;
+    private static String[] menuLables;
+    private static int menuLabelsX;
+    private static double menuLabelXAdd;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
-    private SettingsSystem settings;
-
     private Texture selectedImage;
-
-    private static String label;
-
-    private static String[] menuLables;
     private Rectangle selectedRect;
-
-    private static int menuLabelsX;
-    private static double menuLabelXAdd;
-
     private Rectangle labelPos;
 
     private int pos = 0;
@@ -61,12 +54,11 @@ public class FPSLimitScreen implements Screen {
 
         game.log.Log("Initializing FPS limit select screen", LogSystem.INFO);
 
-        settings = new SettingsSystem("main", game.log);
 
         selectedRect = new Rectangle();
 
         prop = new Properties();
-        prop.load(new FileInputStream("properties/strings." + settings.get("lang", "us") + ".properties"));
+        prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
         label = prop.getProperty("settings.fps.limit.label");
         menuLables = prop.getProperty("settings.fps.limit.elements").split(";");
@@ -102,8 +94,6 @@ public class FPSLimitScreen implements Screen {
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
 
-        settings = new SettingsSystem("game", game.log);
-
         login = TimeUtils.nanoTime();
     }
 
@@ -125,7 +115,7 @@ public class FPSLimitScreen implements Screen {
         game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = (int) settings.get("FPS.limit", 60);
+        int npos = (int) game.settingsGame.get("FPS.limit", 60);
 
         for (int i = 0; i < menuLables.length; i++)
             if (menuLables[i].equals("" + npos)) {
@@ -156,7 +146,7 @@ public class FPSLimitScreen implements Screen {
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
             try {
-                settings.setProperty("FPS.limit", Integer.parseInt(menuLables[pos]));
+                game.settingsGame.set("FPS.limit", Integer.parseInt(menuLables[pos]));
                 game.setScreen(new RestartScreen(game, menu));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -202,8 +192,7 @@ public class FPSLimitScreen implements Screen {
         selectedImage = null;
         labelPos = null;
         menu = null;
-        settings.dispose();
-        settings = null;
+
     }
 
 }

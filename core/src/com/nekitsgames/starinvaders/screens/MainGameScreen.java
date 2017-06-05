@@ -18,7 +18,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
-import com.nekitsgames.starinvaders.API.settingsApi.SettingsSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
 import com.nekitsgames.starinvaders.classes.Ammunition;
 import com.nekitsgames.starinvaders.classes.AmmunitionType;
@@ -40,58 +39,43 @@ import java.util.Properties;
  */
 public class MainGameScreen implements Screen {
 
-    private OrthographicCamera camera;
-    private StarInvaders game;
-    private Properties prop;
-    private SettingsSystem setings;
-    private GlyphLayout glyphLayout;
-
-    private int distance;
-    private long lastDis;
-
-    private Texture shipImage;
-    private Texture hearthImage;
-    private Music spaceSound;
-
-    private Rectangle shipRect;
-    private Rectangle rect;
-
-    private Vector3 touchPos;
-    private Iterator<Rectangle> iterator;
-
     private static int SHIP_WIDTH;
     private static int SHIP_HEIGHT;
     private static int SHIP_X;
     private static int SHIP_Y;
     private static String SHIP_FILE;
     private static String SHIP_SOUND;
-
     private static int SHIP_ONE_STEP_TOUCH;
     private static int SHIP_ONE_STEP_KEY;
-
     private static int current_amunition = 0;
     private static int amunition_count;
     private static ArrayList<Ammunition> ammunitions;
     private static AmmunitionType[] ammunitionTypes;
-
-    private int hearthHeight;
-    private int hearthWidth;
-
-    private int hp;
-
     private static String image_path;
     private static String music_path;
-
     private static ArrayList<Asteroid> asteroids;
     private static AsteroidType[] typies;
-
     private static boolean showFPS;
     private static String FPSLabel;
-
     private static int ship = 1;
     private static int ship_armour = 100;
-
     private static String lazer_texture;
+    private OrthographicCamera camera;
+    private StarInvaders game;
+    private Properties prop;
+    private GlyphLayout glyphLayout;
+    private int distance;
+    private long lastDis;
+    private Texture shipImage;
+    private Texture hearthImage;
+    private Music spaceSound;
+    private Rectangle shipRect;
+    private Rectangle rect;
+    private Vector3 touchPos;
+    private Iterator<Rectangle> iterator;
+    private int hearthHeight;
+    private int hearthWidth;
+    private int hp;
 
     /**
      * Init game screen
@@ -104,28 +88,25 @@ public class MainGameScreen implements Screen {
         game.log.Log("Initializing main game screen", LogSystem.INFO);
 
         prop = new Properties();
-        setings = new SettingsSystem("game", game.log);
 
-        setings = new SettingsSystem("gamedata", game.log);
-        ship = (int) setings.get("ship", 1);
+        ship = (int) game.settingsGameData.get("ship", 1);
 
         prop.load(new FileInputStream("properties/main.properties"));
         music_path = prop.getProperty("dir.sound");
         image_path = prop.getProperty("dir.images");
         SHIP_SOUND = prop.getProperty("app.music");
 
-        SettingsSystem gameplaySettings = new SettingsSystem("gameplay", game.log);
 
         prop.load(new FileInputStream("properties/ship.properties"));
         SHIP_WIDTH = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship." + ship + ".width")));
         SHIP_HEIGHT = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("ship." + ship + ".height")));
         SHIP_Y = (int) (Double.parseDouble(prop.getProperty("ship." + ship + ".y")) * game.WIDTH);
-        SHIP_ONE_STEP_TOUCH = (int) (game.WIDTH * (Double.parseDouble(prop.getProperty("ship." + ship + ".step.mouse"))) + (double) gameplaySettings.get("tech.data", 0.0));
+        SHIP_ONE_STEP_TOUCH = (int) (game.WIDTH * (Double.parseDouble(prop.getProperty("ship." + ship + ".step.mouse"))) + (double) game.settingsGameData.get("tech.data", 0.0));
         SHIP_ONE_STEP_KEY = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship." + ship + ".step.key")));
         SHIP_FILE = prop.getProperty("ship." + ship +  ".texture");
         lazer_texture = prop.getProperty("ship." + ship + ".lazer");
 
-        ship_armour = (int) gameplaySettings.get("armour.percent", 0);
+        ship_armour = (int) game.settingsGameData.get("armour.percent", 0);
 
         prop.load(new FileInputStream("properties/amunition.properties"));
         amunition_count = Integer.parseInt(prop.getProperty("amunition.count"));
@@ -208,7 +189,7 @@ public class MainGameScreen implements Screen {
                     image_path,
                     game.WIDTH,
                     game.HEIGHT,
-                    (int) setings.get("difficulty", 2),
+                    (int) game.settingsGame.get("difficulty", 2),
                     Double.parseDouble(prop.getProperty("asteroid." + (i + 1) + ".dif_cof")),
                     Integer.parseInt(prop.getProperty("asteroid." + (i + 1) + ".damage")),
                     prop.getProperty("asteroid." + (i + 1) + ".killable").equals("1"),
@@ -427,13 +408,12 @@ public class MainGameScreen implements Screen {
     public void show() {
         try {
             prop.load(new FileInputStream("properties/defaults.properties"));
-            setings = new SettingsSystem("game", game.log);
         } catch (IOException e) {
             e.printStackTrace();
             game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
             Gdx.app.exit();
         }
-        showFPS = (boolean) setings.get("FPS.show", Boolean.parseBoolean(prop.getProperty("settings.FPS.show")));
+        showFPS = (boolean) game.settingsGame.get("FPS.show", Boolean.parseBoolean(prop.getProperty("settings.FPS.show")));
         game.log.Log("Show FPS - " + showFPS, LogSystem.INFO);
     }
 
