@@ -72,4 +72,19 @@ public class Settings2API {
 
     }
 
+    /**
+     * Get value by key
+     *
+     * @since 2.1
+     * @param key - key
+     * @param def - default value
+     * @return value by key
+     */
+    public Object get (String key, Object def) {
+        if (key.isEmpty())
+            throw new NullPointerException("Key can't be null");
+        if (cache.isNull(key))
+            return def; else return cache.get(key);
+    }
+
 }
