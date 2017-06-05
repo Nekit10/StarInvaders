@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
@@ -42,6 +43,10 @@ public class MainMenuScreen implements Screen {
     private GlyphLayout glyphLayout;
     private Properties prop;
     private Texture selectedImage;
+    private Texture planet;
+    private Texture planet2;
+    private Rectangle planetRect;
+    private Rectangle planet2Rect;
     private Music menuMusic;
     private Rectangle labelPos;
 
@@ -95,6 +100,9 @@ public class MainMenuScreen implements Screen {
         imagePath = prop.getProperty("dir.images");
         soundPath = prop.getProperty("dir.sound");
 
+        planet = new Texture(imagePath + "planet6.png");
+        planet2 = new Texture(imagePath + "planet7.png");
+
         this.game = game;
 
         camera = new OrthographicCamera();
@@ -111,6 +119,20 @@ public class MainMenuScreen implements Screen {
         labelPos.y = game.HEIGHT - labelMarginTop;
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
+
+        planetRect = new Rectangle();
+        planet2Rect = new Rectangle();
+
+        do {
+            planetRect.width = MathUtils.random(game.WIDTH * 0.26666f, game.WIDTH * 1.06666f);
+            planetRect.height = planetRect.width;
+            planetRect.x = MathUtils.random(0, game.WIDTH);
+            planetRect.y = MathUtils.random(0, game.HEIGHT);
+            planet2Rect.width = MathUtils.random(game.WIDTH * 0.26666f, game.WIDTH * 1.06666f);
+            planet2Rect.height = planetRect.width;
+            planet2Rect.x = MathUtils.random(0, game.WIDTH);
+            planet2Rect.y = MathUtils.random(0, game.HEIGHT);
+        } while (planetRect.overlaps(planet2Rect));
     }
 
     /**
@@ -128,6 +150,8 @@ public class MainMenuScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
+        game.batch.draw(planet, planetRect.x, planetRect.y, planetRect.width, planetRect.height);
+        game.batch.draw(planet2, planet2Rect.x, planet2Rect.y, planet2Rect.width, planet2Rect.height);
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
         for (int i = 0; i < menuLables.length; i++)
