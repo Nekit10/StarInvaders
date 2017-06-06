@@ -42,35 +42,52 @@ public class MainGameScreen implements Screen {
     private static int SHIP_HEIGHT;
     private static int SHIP_X;
     private static int SHIP_Y;
+
     private static String SHIP_FILE;
     private static String SHIP_SOUND;
+
     private static int SHIP_ONE_STEP_TOUCH;
     private static int SHIP_ONE_STEP_KEY;
+
     private static int current_amunition = 0;
     private static int amunition_count;
     private static ArrayList<Ammunition> ammunitions;
     private static AmmunitionType[] ammunitionTypes;
+
     private static String image_path;
     private static String music_path;
+
     private static ArrayList<Asteroid> asteroids;
     private static AsteroidType[] typies;
+
     private static boolean showFPS;
     private static String FPSLabel;
+
     private static int ship = 1;
     private static int ship_armour = 100;
+
     private static String lazer_texture;
+
     private OrthographicCamera camera;
+
     private StarInvaders game;
+
     private Properties prop;
     private GlyphLayout glyphLayout;
     private int distance;
+
     private long ammunition_last;
     private long lastDis;
+
     private Texture shipImage;
     private Texture hearthImage;
+
     private Music spaceSound;
     private Rectangle shipRect;
+
     private Iterator<Rectangle> iterator;
+
+
     private int hearthHeight;
     private int hearthWidth;
     private int hp;
@@ -97,7 +114,7 @@ public class MainGameScreen implements Screen {
 
         prop.load(new FileInputStream("properties/ship.properties"));
         SHIP_WIDTH = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship." + ship + ".width")));
-        SHIP_HEIGHT = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("ship." + ship + ".height")));
+        SHIP_HEIGHT = SHIP_WIDTH;
         SHIP_Y = (int) (Double.parseDouble(prop.getProperty("ship." + ship + ".y")) * game.WIDTH);
         SHIP_ONE_STEP_TOUCH = (int) (game.WIDTH * (Double.parseDouble(prop.getProperty("ship." + ship + ".step.mouse"))) + (double) game.settingsGameData.get("tech.data", 0.0));
         SHIP_ONE_STEP_KEY = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("ship." + ship + ".step.key")));
@@ -134,11 +151,10 @@ public class MainGameScreen implements Screen {
 
         prop.load(new FileInputStream("properties/game.properties"));
         hearthImage = new Texture(image_path + prop.getProperty("hearth.texture"));
-        hearthHeight = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("hearth.height")));
         hearthWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("hearth.width")));
+        hearthHeight = hearthWidth;
 
         asteroids = new ArrayList<Asteroid>();
-
 
         this.game = game;
 

@@ -63,8 +63,8 @@ public class RestartScreen implements Screen {
         menuElementStep = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.elements.step")));
         menuMarginBottom = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.margin.bottom")));
         menuMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.margin.right")));
-        menuHeight = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
         menuWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
+        menuHeight = menuWidth;
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
 
         prop.load(new FileInputStream("properties/main.properties"));

@@ -70,11 +70,11 @@ public class FPSShowScreen implements Screen {
         menuElementStep = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.elements.step")));
         menuMarginBottom = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.margin.bottom")));
         menuMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.margin.right")));
-        menuHeight = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
         menuWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
+        menuHeight = menuWidth;
         selectedMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.2.margin.right")));
-        selectedRect.height = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.height")));
         selectedRect.width = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
+        selectedRect.height = selectedRect.width;
 
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
 
