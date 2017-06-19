@@ -8,12 +8,10 @@ package com.nekitsgames.starinvaders.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
@@ -24,34 +22,29 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Fight screen
+ * Win screen
  *
  * @author Nikita Serba
  * @version 1.0
  * @since 2.1
  */
-public class FightScreen implements Screen {
+public class LocalMultiplayerWinScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
     private static int menuLabelsX;
     private static double menuLabelXAdd;
-    MainMenuScreen mainMenuScreen;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
     private Properties prop;
     private Texture selectedImage;
-    private Texture planet;
-    private Texture planet2;
-    private Rectangle planetRect;
-    private Rectangle planet2Rect;
-    private Music menuMusic;
     private Rectangle labelPos;
+
+    private int player_num;
+
     private String selectedTexture;
     private String imagePath;
-    private String soundPath;
-    private String soundName;
     private int labelMarginTop;
     private int menuElementStep;
     private int menuMarginBottom;
@@ -63,30 +56,32 @@ public class FightScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
-    private long login;
+    private String player;
+    private int disX, disY;
 
     /**
-     * Init fight screen
+     * Init game end screen
      *
-     * @param game - game class
+     * @param game   - game class
+     * @param player - player
      * @throws IOException if can't access properties files
-     * @since 2.1
+     * @since 1.1
      */
-    public FightScreen(StarInvaders game, MainMenuScreen mainMenuScreen) throws IOException {
-        game.log.Log("Initializing main menu", LogSystem.INFO);
+    public LocalMultiplayerWinScreen(StarInvaders game, int player) throws IOException {
+        game.log.Log("Initializing game end screen", LogSystem.INFO);
 
-        this.mainMenuScreen = mainMenuScreen;
+        this.player_num = player;
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("fight.label");
-        menuLables = prop.getProperty("fight.elements").split(";");
+        label = prop.getProperty("local_win.label");
+        menuLables = prop.getProperty("local_win.elements").split(";");
+        this.player = prop.getProperty("local_win.result").replace("%num", String.valueOf(player));
 
-        prop.load(new FileInputStream("properties/fight.properties"));
+        prop.load(new FileInputStream("properties/die.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
-        soundName = prop.getProperty("menu.sound");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
         menuElementStep = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.elements.step")));
         menuMarginBottom = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("menu.selected.margin.bottom")));
@@ -97,45 +92,29 @@ public class FightScreen implements Screen {
 
         prop.load(new FileInputStream("properties/main.properties"));
         imagePath = prop.getProperty("dir.images");
-        soundPath = prop.getProperty("dir.sound");
-
-        planet = new Texture(imagePath + "planet6.png");
-        planet2 = new Texture(imagePath + "planet7.png");
 
         this.game = game;
 
         camera = new OrthographicCamera();
         camera.setToOrtho(false, game.WIDTH, game.HEIGHT);
-        glyphLayout = new GlyphLayout(
-                game.fontMain,
-                label);
+        glyphLayout = new GlyphLayout(game.fontMain, label);
         labelPos = new Rectangle();
 
         selectedImage = new Texture(imagePath + selectedTexture);
-        menuMusic = Gdx.audio.newMusic(Gdx.files.internal(soundPath + soundName));
 
         labelPos.x = (int) ((game.WIDTH) / 2 - glyphLayout.width / 2);
         labelPos.y = game.HEIGHT - labelMarginTop;
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
 
-        planetRect = new Rectangle();
-        planet2Rect = new Rectangle();
+        glyphLayout = new GlyphLayout(game.fontLabel, this.player);
 
-        do {
-            planetRect.width = MathUtils.random(game.WIDTH * 0.26666f, game.WIDTH * 1.06666f);
-            planetRect.height = planetRect.width;
-            planetRect.x = MathUtils.random(0, game.WIDTH);
-            planetRect.y = MathUtils.random(0, game.HEIGHT);
-            planet2Rect.width = MathUtils.random(game.WIDTH * 0.26666f, game.WIDTH * 1.06666f);
-            planet2Rect.height = planetRect.width;
-            planet2Rect.x = MathUtils.random(0, game.WIDTH);
-            planet2Rect.y = MathUtils.random(0, game.HEIGHT);
-        } while (planetRect.overlaps(planet2Rect));
+        disX = (int) ((game.WIDTH - glyphLayout.width) / 2);
+        disY = (int) (labelPos.y - 100 - glyphLayout.height);
     }
 
     /**
-     * Render main menu screen
+     * Render game end screen
      *
      * @param delta - delta time
      * @since 1.1
@@ -149,14 +128,14 @@ public class FightScreen implements Screen {
 
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
-        game.batch.draw(planet, planetRect.x, planetRect.y, planetRect.width, planetRect.height);
-        game.batch.draw(planet2, planet2Rect.x, planet2Rect.y, planet2Rect.width, planet2Rect.height);
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
-        for (int i = 0; i < menuLables.length; i++)
-            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
+        game.fontLabel.draw(game.batch, player, disX, disY);
 
-        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
+        for (int i = 0; i < menuLables.length; i++)
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - 100 - (i + 1) * menuElementStep);
+
+        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - 100 - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
         game.batch.end();
 
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
@@ -170,27 +149,14 @@ public class FightScreen implements Screen {
             }
         }
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-            game.setScreen(mainMenuScreen);
-
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
+        if (Gdx.input.isKeyPressed(Input.Keys.ENTER))
             switch (pos) {
                 case 0:
-                    try {
-                        game.setScreen(new PlayFightScreen(game));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    dispose();
-                    break;
-                case 1:
                     try {
                         game.setScreen(new PlayFightLocalMultiplayerScreen(game));
                     } catch (IOException e) {
@@ -198,30 +164,38 @@ public class FightScreen implements Screen {
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
                         Gdx.app.exit();
                     }
-                    dispose();
+                    break;
+                case 1:
+                    try {
+                        game.setScreen(new MainMenuScreen(game));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 2:
+                    Gdx.app.exit();
                     break;
             }
-
     }
 
     /**
-     * Show main menu screen
+     * Show screen
      *
-     * @since 1.1
+     * @since 2.1
      */
     @Override
     public void show() {
-        login = TimeUtils.nanoTime();
-        menuMusic.setLooping(true);
-        menuMusic.play();
+
     }
 
     /**
-     * Resize main menu screen
+     * Resize screen
      *
-     * @param width  - new width
-     * @param height - new height
-     * @since 1.1
+     * @param width  - new screen width
+     * @param height - new screen height
+     * @since 2.1
      */
     @Override
     public void resize(int width, int height) {
@@ -229,9 +203,9 @@ public class FightScreen implements Screen {
     }
 
     /**
-     * Pause main menu screen
+     * Pause screen
      *
-     * @since 1.1
+     * @since 2.1
      */
     @Override
     public void pause() {
@@ -239,9 +213,9 @@ public class FightScreen implements Screen {
     }
 
     /**
-     * Resume main menu screen
+     * Resume screen
      *
-     * @since 1.1
+     * @since 2.1
      */
     @Override
     public void resume() {
@@ -249,9 +223,9 @@ public class FightScreen implements Screen {
     }
 
     /**
-     * Hide main menu screen
+     * Hide screen
      *
-     * @since 1.1
+     * @since 2.1
      */
     @Override
     public void hide() {
@@ -261,11 +235,11 @@ public class FightScreen implements Screen {
     /**
      * Clean
      *
-     * @since 1.1
+     * @since 2.1
      */
     @Override
     public void dispose() {
-        game.log.Log("Disposing main menu", LogSystem.INFO);
+        game.log.Log("Disposing game end screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
@@ -273,8 +247,6 @@ public class FightScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
-        menuMusic.dispose();
-        menuMusic = null;
     }
 
 }
