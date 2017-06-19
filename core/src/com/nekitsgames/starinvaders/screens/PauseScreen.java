@@ -37,7 +37,7 @@ public class PauseScreen implements Screen {
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
-    private MainGameScreen mainGameScreen;
+    private Screen mainGameScreen;
     private Properties prop;
     private Texture selectedImage;
     private Rectangle labelPos;
@@ -63,7 +63,7 @@ public class PauseScreen implements Screen {
      * @param mainGameScreen - main game screen class
      * @throws IOException if can't access properties files
      */
-    public PauseScreen(StarInvaders game, MainGameScreen mainGameScreen) throws IOException {
+    public PauseScreen(StarInvaders game, Screen mainGameScreen) throws IOException {
         game.log.Log("Initializing pause screen", LogSystem.INFO);
 
         prop = new Properties();

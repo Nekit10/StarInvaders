@@ -178,7 +178,19 @@ public class FightScreen implements Screen {
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        // if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
+            switch (pos) {
+                case 0:
+                    try {
+                        game.setScreen(new PlayFightScreen(game));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    dispose();
+                    break;
+            }
 
     }
 

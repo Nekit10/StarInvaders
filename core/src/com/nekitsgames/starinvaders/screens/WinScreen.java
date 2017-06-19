@@ -22,13 +22,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Game end screen
+ * Win screen
  *
  * @author Nikita Serba
  * @version 1.0
- * @since 1.1
+ * @since 2.1
  */
-public class GameEndScreen implements Screen {
+public class WinScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
@@ -40,8 +40,6 @@ public class GameEndScreen implements Screen {
     private Properties prop;
     private Texture selectedImage;
     private Rectangle labelPos;
-
-    private int distance;
 
     private String selectedTexture;
     private String imagePath;
@@ -56,30 +54,25 @@ public class GameEndScreen implements Screen {
     private int pos = 0;
     private long lastMenuChange;
 
-    private String distan;
-    private int disX, disY;
 
     /**
-     * Init game end screen
+     * Init win screen
      *
-     * @since 1.1
      * @param game - game class
-     * @param dis - distance
      * @throws IOException if can't access properties files
+     * @since 2.1
      */
-    public GameEndScreen(StarInvaders game, int dis) throws IOException {
+    public WinScreen(StarInvaders game) throws IOException {
         game.log.Log("Initializing game end screen", LogSystem.INFO);
 
-        this.distance = dis;
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("die.label");
-        menuLables = prop.getProperty("die.elements").split(";");
-        distan = prop.getProperty("die.result") + " " + distance + " m";
+        label = prop.getProperty("win.label");
+        menuLables = prop.getProperty("win.elements").split(";");
 
-        prop.load(new FileInputStream("properties/die.properties"));
+        prop.load(new FileInputStream("properties/win.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -107,17 +100,13 @@ public class GameEndScreen implements Screen {
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
 
-        glyphLayout = new GlyphLayout(game.fontLabel, distan);
-
-        disX = (int) ((game.WIDTH - glyphLayout.width) / 2);
-        disY = (int) (labelPos.y - 100 - glyphLayout.height);
     }
 
     /**
      * Render game end screen
      *
-     * @since 1.1
      * @param delta - delta time
+     * @since 1.1
      */
     @Override
     public void render(float delta) {
@@ -129,9 +118,6 @@ public class GameEndScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
-
-        if (distance != -1)
-            game.fontLabel.draw(game.batch, distan, disX, disY);
 
         for (int i = 0; i < menuLables.length; i++)
             game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - 100 - (i + 1) * menuElementStep);
@@ -159,9 +145,7 @@ public class GameEndScreen implements Screen {
             switch (pos) {
                 case 0:
                     try {
-                        if (distance != -1)
-                            game.setScreen(new MainGameScreen(game));
-                        else game.setScreen(new PlayFightScreen(game));
+                        game.setScreen(new PlayFightScreen(game));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -196,9 +180,9 @@ public class GameEndScreen implements Screen {
     /**
      * Resize screen
      *
-     * @since 1.1
-     * @param width - new screen width
+     * @param width  - new screen width
      * @param height - new screen height
+     * @since 1.1
      */
     @Override
     public void resize(int width, int height) {
