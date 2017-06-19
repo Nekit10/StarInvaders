@@ -28,6 +28,7 @@ public class AmmunitionType {
     private Texture explImage;
     private long last;
     private int hp_asteroid;
+    private int damage;
 
     /**
      * Create ammunitionn type
@@ -45,7 +46,7 @@ public class AmmunitionType {
      * @param game - game class
      * @param hp_asteroid - ammunition damage
      */
-    public AmmunitionType(double width, double height, double step, int wait_time, String mainTexture, String startSound, String explImage, String image_path, String sound_path, StarInvaders game, int hp_asteroid) {
+    public AmmunitionType(double width, double height, double step, int wait_time, String mainTexture, String startSound, String explImage, String image_path, String sound_path, StarInvaders game, int hp_asteroid, int damage) {
         this.width = (int) (width * game.WIDTH);
         this.height = (int) (height * game.HEIGHT);
         this.step = (int) (step * game.HEIGHT);
@@ -54,6 +55,7 @@ public class AmmunitionType {
         this.startSound = Gdx.audio.newSound(Gdx.files.internal(sound_path + startSound));
         this.explImage = new Texture(image_path + explImage);
         this.hp_asteroid = hp_asteroid;
+        this.damage = damage;
     }
 
     /**
@@ -154,5 +156,15 @@ public class AmmunitionType {
      */
     public void setLast(long last) {
         this.last = last;
+    }
+
+    /**
+     * Get ammunition damage
+     *
+     * @return ammunition damage
+     * @since 2.1
+     */
+    public int getDamage() {
+        return damage;
     }
 }

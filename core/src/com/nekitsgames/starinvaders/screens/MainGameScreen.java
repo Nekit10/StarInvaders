@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -67,30 +68,39 @@ public class MainGameScreen implements Screen {
     private static int ship_armour = 100;
 
     private static String lazer_texture;
-
+    private final int GREEN_LAZER_DAMAGE = 5;
+    private final int GREEN_ROCKET_DAMAGE = 30;
+    int cof2 = 1;
+    long lastCofChange = TimeUtils.nanoTime();
     private OrthographicCamera camera;
-
     private StarInvaders game;
-
     private Properties prop;
     private GlyphLayout glyphLayout;
     private int distance;
-
     private long ammunition_last;
     private long lastDis;
-
     private Texture shipImage;
     private Texture hearthImage;
-
     private Music spaceSound;
     private Rectangle shipRect;
-
     private Iterator<Rectangle> iterator;
-
-
     private int hearthHeight;
     private int hearthWidth;
     private int hp;
+    private Texture badShipTexture;
+    private Rectangle badShipRect;
+    private Texture greenLazerTexture;
+    private ArrayList<Rectangle> greenLazerRects;
+    private boolean isBadShipAlive = false;
+    private int badShipHP = 100;
+    private int badShipsCount = 0;
+    private long greenLazerLast = 0;
+    private ArrayList<Rectangle> greenRocketRects;
+    private Texture greenRocketTexture;
+    private long greenRocketLast = 0;
+    private boolean isOnLeft = false;
+
+
 
     /**
      * Init game screen
@@ -138,7 +148,8 @@ public class MainGameScreen implements Screen {
                     image_path,
                     music_path,
                     game,
-                    Integer.parseInt(prop.getProperty("amunition." + (i + 1) + ".hp_asteroid"))
+                    Integer.parseInt(prop.getProperty("amunition." + (i + 1) + ".hp_asteroid")),
+                    Integer.parseInt(prop.getProperty("amunition." + (i + 1) + ".damage"))
             );
         }
 
@@ -175,6 +186,13 @@ public class MainGameScreen implements Screen {
         shipRect.y = SHIP_Y;
         shipRect.width = SHIP_WIDTH;
         shipRect.height = SHIP_HEIGHT;
+
+        badShipTexture = new Texture(image_path + "ship13.png");
+        badShipRect = new Rectangle(game.WIDTH / 2 - shipRect.width / 2, game.HEIGHT - shipRect.height, shipRect.width, shipRect.height);
+        greenLazerTexture = new Texture(image_path + "green_lazer.png");
+        greenLazerRects = new ArrayList<>();
+        greenRocketTexture = new Texture(image_path + "spr_missile2.png");
+        greenRocketRects = new ArrayList<>();
 
         for (int i = 0; i < typies.length; i++) {
             prop.load(new FileInputStream("properties/asteroids.properties"));
@@ -215,6 +233,20 @@ public class MainGameScreen implements Screen {
     }
 
     /**
+     * Move bad ship
+     *
+     * @param x - distance
+     * @since 2.1
+     */
+    private void moveBadShip(float x) {
+        badShipRect.x += x;
+        if (badShipRect.x < 0)
+            badShipRect.x = 0;
+        if (badShipRect.x > (game.WIDTH - shipRect.width))
+            badShipRect.x = game.WIDTH - shipRect.width;
+    }
+
+    /**
      * Spawn new ammunition
      *
      * @since 1.1
@@ -225,6 +257,32 @@ public class MainGameScreen implements Screen {
         ammunitions.add(new Ammunition(ammunitionTypes[current_amunition], x, y));
         ammunitionTypes[current_amunition].setLast(TimeUtils.nanoTime());
         ammunitionTypes[current_amunition].getStartSound().play();
+    }
+
+    /**
+     * Spawn new green lazer
+     *
+     * @param x - new ammunition X position
+     * @param y - new ammunition Y position
+     * @since 2.1
+     */
+    private void spawnGreenLazer(float x, float y) {
+        greenLazerRects.add(new Rectangle(x, y, 12, 12));
+        greenLazerLast = TimeUtils.nanoTime();
+        ammunitionTypes[0].getStartSound().play();
+    }
+
+    /**
+     * Spawn new green rocket
+     *
+     * @param x - new ammunition X position
+     * @param y - new ammunition Y position
+     * @since 2.1
+     */
+    private void spawnGreenRocket(float x, float y) {
+        greenRocketRects.add(new Rectangle(x, y, 64, 64));
+        greenRocketLast = TimeUtils.nanoTime();
+        ammunitionTypes[1].getStartSound().play();
     }
 
     /**
@@ -271,12 +329,22 @@ public class MainGameScreen implements Screen {
             game.batch.setProjectionMatrix(camera.combined);
 
             game.batch.begin();
+
+            if (isBadShipAlive)
+                game.batch.draw(badShipTexture, badShipRect.x, badShipRect.y, shipRect.width, shipRect.height);
+
             String dis = distance + " m";
             game.fontData.draw(game.batch, dis, (float) (game.HEIGHT * 0.037037), (float) (game.WIDTH * 0.02604));
 
             game.batch.draw(shipImage, shipRect.x, shipRect.y, shipRect.getWidth(), shipRect.getHeight());
             for (Ammunition lazerRect : ammunitions) {
                 game.batch.draw(lazerRect.getType().getMainTexture(), lazerRect.getRect().x, lazerRect.getRect().y, lazerRect.getRect().getWidth(), lazerRect.getRect().getHeight());
+            }
+            for (Rectangle lazerRect : greenLazerRects) {
+                game.batch.draw(greenLazerTexture, lazerRect.x, lazerRect.y, lazerRect.getWidth(), lazerRect.getHeight());
+            }
+            for (Rectangle lazerRocket : greenRocketRects) {
+                game.batch.draw(greenRocketTexture, lazerRocket.x, lazerRocket.y, lazerRocket.getWidth(), lazerRocket.getHeight());
             }
             for (Asteroid astr : asteroids) {
                 game.batch.draw(
@@ -327,7 +395,9 @@ public class MainGameScreen implements Screen {
             if (Gdx.input.isKeyPressed(Input.Keys.SPACE) & TimeUtils.nanoTime() - ammunitionTypes[current_amunition].getLast() > ammunitionTypes[current_amunition].getWait_time())
                 spawnAmmunition((int) (shipRect.x + SHIP_WIDTH / 2), (int) (shipRect.y + SHIP_HEIGHT));
 
-            ArrayList<Integer> rm1 = new ArrayList<>();
+            ArrayList<Ammunition> rm1 = new ArrayList<>();
+            List<Rectangle> rm2 = new ArrayList<>();
+            List<Rectangle> rm3 = new ArrayList<>();
 
             for (Ammunition amun : ammunitions) {
                 amun.getRect().y += amun.getType().getStep() * Gdx.graphics.getDeltaTime();
@@ -340,14 +410,65 @@ public class MainGameScreen implements Screen {
                         else
                             astr.setTexture(astr.getTexture() + 1);
 
-                        rm1.add(ammunitions.indexOf(amun));
+                        rm1.add(amun);
                     }
+                for (Rectangle amun2 : greenRocketRects) {
+                    if (amun.getRect().overlaps(amun2)) {
+                        rm1.add(amun);
+                        rm3.add(amun2);
+                    }
+                }
+                if (badShipRect.overlaps(amun.getRect()) & isBadShipAlive) {
+                    badShipHP -= amun.getType().getDamage();
+                    rm1.add(amun);
+                }
+                if (amun.getRect().y > game.HEIGHT)
+                    rm1.add(amun);
                 for (int i : rm)
                     asteroids.remove(i);
             }
 
-            for (int i : rm1)
-                ammunitions.remove(i);
+            for (Rectangle amun : greenLazerRects) {
+                amun.y -= ammunitionTypes[0].getStep() * Gdx.graphics.getDeltaTime();
+                if (amun.overlaps(shipRect)) {
+                    hp -= GREEN_LAZER_DAMAGE;
+                    rm2.add(amun);
+                }
+            }
+
+
+            for (Rectangle amun : greenRocketRects) {
+                amun.y -= ammunitionTypes[1].getStep() * Gdx.graphics.getDeltaTime();
+                if (amun.x > shipRect.x + shipRect.width / 2)
+                    amun.x -= ammunitionTypes[1].getStep() * Gdx.graphics.getDeltaTime();
+                if (amun.x < shipRect.x + shipRect.width / 2)
+                    amun.x += ammunitionTypes[1].getStep() * 1.1f * Gdx.graphics.getDeltaTime();
+                if (amun.overlaps(shipRect)) {
+                    hp -= GREEN_ROCKET_DAMAGE;
+                    rm3.add(amun);
+                }
+            }
+
+
+            for (Ammunition i : rm1) {
+                int tmp = ammunitions.indexOf(i);
+                if (tmp > -1)
+                    ammunitions.remove(tmp);
+            }
+
+
+            for (Rectangle i : rm2) {
+                int tmp = greenLazerRects.indexOf(i);
+                if (tmp > -1)
+                    greenLazerRects.remove(tmp);
+            }
+
+
+            for (Rectangle i : rm3) {
+                int tmp = greenRocketRects.indexOf(i);
+                if (tmp > -1)
+                    greenRocketRects.remove(tmp);
+            }
 
             if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
                 try {
@@ -374,6 +495,50 @@ public class MainGameScreen implements Screen {
                     indexes.add(asteroids.indexOf(astr));
                 }
             }
+
+            if (((int) (distance / 2000.0) != badShipsCount) && !isBadShipAlive) {
+                // if (!isBadShipAlive & badShipsCount == 0) {
+                isBadShipAlive = true;
+                spawnGreenRocket(badShipRect.x + badShipRect.width / 2, badShipRect.y - 10);
+                badShipsCount++;
+                badShipHP = 100;
+            }
+
+            // --------------------- AI SECTION ---------------------
+
+            if (isBadShipAlive) {
+                //MOVE
+                for (Ammunition amun : ammunitions) {
+                    int cof = 1;
+                    if (badShipRect.x + badShipRect.width == game.WIDTH)
+                        isOnLeft = true;
+                    if (badShipRect.x == 0)
+                        isOnLeft = false;
+                    if (isOnLeft)
+                        cof = -1;
+                    if ((badShipRect.x < amun.getRect().x + 50) & ((badShipRect.x + badShipRect.width) > amun.getRect().x)) {
+                        moveBadShip(SHIP_ONE_STEP_KEY * 0.13f * Gdx.graphics.getDeltaTime() * cof);
+                    }
+                }
+
+                if ((badShipRect.x - 30 < shipRect.x) & (badShipRect.x + badShipRect.width + 30 > shipRect.x) & (TimeUtils.nanoTime() - greenLazerLast > 100000000)) {
+                    spawnGreenLazer(badShipRect.x + badShipRect.width / 2, badShipRect.y - 10);
+                }
+
+                if (TimeUtils.nanoTime() - greenRocketLast > 10000000000l) {
+                    spawnGreenRocket(badShipRect.x + badShipRect.width / 2, badShipRect.y - 10);
+                }
+
+                if (TimeUtils.nanoTime() - lastCofChange > 4000000000l) {
+                    lastCofChange = TimeUtils.nanoTime();
+                    cof2 = MathUtils.randomBoolean() ? 1 : -1;
+                }
+
+            }
+
+            // ----------------- END OF AI SECTION ------------------
+            if (isBadShipAlive & badShipHP < 0)
+                isBadShipAlive = false;
 
             for (int i : indexes)
                 asteroids.remove(i);
