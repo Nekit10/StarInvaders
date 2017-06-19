@@ -18,26 +18,25 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
-import com.nekitsgames.starinvaders.screens.settings.SettingsScreen;
-import com.nekitsgames.starinvaders.screens.settings.ShipScreen;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Main menu screen
+ * Fight screen
  *
  * @author Nikita Serba
- * @version 3.0
- * @since 1.1
+ * @version 1.0
+ * @since 2.1
  */
-public class MainMenuScreen implements Screen {
+public class FightScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
     private static int menuLabelsX;
     private static double menuLabelXAdd;
+    MainMenuScreen mainMenuScreen;
     private StarInvaders game;
     private OrthographicCamera camera;
     private GlyphLayout glyphLayout;
@@ -49,7 +48,6 @@ public class MainMenuScreen implements Screen {
     private Rectangle planet2Rect;
     private Music menuMusic;
     private Rectangle labelPos;
-
     private String selectedTexture;
     private String imagePath;
     private String soundPath;
@@ -68,23 +66,24 @@ public class MainMenuScreen implements Screen {
     private long login;
 
     /**
-     * Init main menu screen
+     * Init fight screen
      *
-     * @since 1.1
      * @param game - game class
      * @throws IOException if can't access properties files
+     * @since 2.1
      */
-    public MainMenuScreen(StarInvaders game) throws IOException {
+    public FightScreen(StarInvaders game, MainMenuScreen mainMenuScreen) throws IOException {
         game.log.Log("Initializing main menu", LogSystem.INFO);
 
+        this.mainMenuScreen = mainMenuScreen;
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("menu.label");
-        menuLables = prop.getProperty("menu.elements").split(";");
+        label = prop.getProperty("fight.label");
+        menuLables = prop.getProperty("fight.elements").split(";");
 
-        prop.load(new FileInputStream("properties/main_menu.properties"));
+        prop.load(new FileInputStream("properties/fight.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         soundName = prop.getProperty("menu.sound");
@@ -138,8 +137,8 @@ public class MainMenuScreen implements Screen {
     /**
      * Render main menu screen
      *
-     * @since 1.1
      * @param delta - delta time
+     * @since 1.1
      */
     @Override
     public void render(float delta) {
@@ -171,55 +170,16 @@ public class MainMenuScreen implements Screen {
             }
         }
 
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+            game.setScreen(mainMenuScreen);
+
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
-            switch (pos) {
-                case 0:
-                    try {
-                        game.setScreen(new MainGameScreen(game));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    dispose();
-                    break;
-                case 1:
-                    try {
-                        game.setScreen(new FightScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 2:
-                    try {
-                        game.setScreen(new SettingsScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 3:
-                    try {
-                        game.setScreen(new ShipScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
+        // if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
 
-                case 4:
-                    Gdx.app.exit();
-                    break;
-            }
     }
 
     /**
@@ -237,9 +197,9 @@ public class MainMenuScreen implements Screen {
     /**
      * Resize main menu screen
      *
-     * @since 1.1
-     * @param width - new width
+     * @param width  - new width
      * @param height - new height
+     * @since 1.1
      */
     @Override
     public void resize(int width, int height) {

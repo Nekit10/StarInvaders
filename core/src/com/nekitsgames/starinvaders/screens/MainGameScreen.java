@@ -497,7 +497,7 @@ public class MainGameScreen implements Screen {
             }
 
             if (((int) (distance / 2000.0) != badShipsCount) && !isBadShipAlive) {
-                // if (!isBadShipAlive & badShipsCount == 0) {
+                //   if (!isBadShipAlive & badShipsCount == 0) {
                 isBadShipAlive = true;
                 spawnGreenRocket(badShipRect.x + badShipRect.width / 2, badShipRect.y - 10);
                 badShipsCount++;
