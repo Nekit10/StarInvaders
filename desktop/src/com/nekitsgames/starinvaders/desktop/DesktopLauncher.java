@@ -47,6 +47,7 @@ public class DesktopLauncher {
 			config.fullscreen = true;
 			config.allowSoftwareMode = true;
 			prop.load(new FileInputStream("properties/defaults.properties"));
+        set.load("game");
         config.foregroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));
         config.backgroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));
         new LwjglApplication(new StarInvaders(), config);
