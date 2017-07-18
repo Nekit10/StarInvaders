@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class AudioVolumeScreen implements Screen {
+public class AudioScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
@@ -43,26 +43,26 @@ public class AudioVolumeScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private SettingsAudioScreen menu;
+    private SettingsVideoScreen menu;
     private long login;
 
     private int selectedX, selectedY;
     private int selectedMarginRight;
 
-    public AudioVolumeScreen(StarInvaders game, SettingsAudioScreen menu) throws IOException {
+    public AudioScreen(StarInvaders game, SettingsVideoScreen menu) throws IOException {
         this.menu = menu;
 
-        game.log.Log("Initializing audio screen", LogSystem.INFO);
+        game.log.Log("Initializing texture screen", LogSystem.INFO);
 
         selectedRect = new Rectangle();
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("settings.volume.label");
-        menuLables = prop.getProperty("settings.volume.elements").split(";");
+        label = prop.getProperty("settings.audio.label");
+        menuLables = prop.getProperty("settings.audio.elements").split(";");
 
-        prop.load(new FileInputStream("properties/settings/volume.properties"));
+        prop.load(new FileInputStream("properties/settings/audio.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -114,19 +114,7 @@ public class AudioVolumeScreen implements Screen {
         game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = 0;
-
-        try {
-            for (int i = 0; i < menuLables.length; i++) {
-                if (Double.parseDouble(menuLables[i]) == (double) game.settingsGame.get("volume", 0f))
-                    npos = i;
-            }
-        } catch (ClassCastException e) {
-            for (int i = 0; i < menuLables.length; i++) {
-                if (Double.parseDouble(menuLables[i]) == ((Integer) game.settingsGame.get("volume", 0f)).doubleValue())
-                    npos = i;
-            }
-        }
+        int npos = (int) game.settingsGame.get("audio", 0);
 
         selectedX = menuLabelsX - selectedMarginRight;
         selectedY = (int) (labelPos.y - (npos + 1) * menuElementStep - menuMarginBottom);
@@ -151,7 +139,7 @@ public class AudioVolumeScreen implements Screen {
             game.setScreen(menu);
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
-            game.settingsGame.set("volume", Double.parseDouble(menuLables[pos]));
+            game.settingsGame.set("audio", pos);
             game.setScreen(menu);
         }
     }

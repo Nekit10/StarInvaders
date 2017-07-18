@@ -118,12 +118,12 @@ public class ContrastScreen implements Screen {
 
         try {
             for (int i = 0; i < menuLables.length; i++) {
-                if (Float.parseFloat(menuLables[i]) == (float) game.settingsGame.get("contrast", 0f))
+                if (Double.parseDouble(menuLables[i]) == (double) game.settingsGame.get("contrast", 0f))
                     npos = i;
             }
         } catch (ClassCastException e) {
             for (int i = 0; i < menuLables.length; i++) {
-                if (Float.parseFloat(menuLables[i]) == ((Integer) game.settingsGame.get("contrast", 0f)).floatValue())
+                if (Double.parseDouble(menuLables[i]) == ((Integer) game.settingsGame.get("contrast", 0f)).doubleValue())
                     npos = i;
             }
         }
@@ -151,7 +151,7 @@ public class ContrastScreen implements Screen {
             game.setScreen(menu);
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
-            game.settingsGame.set("contrast", Float.parseFloat(menuLables[pos]));
+            game.settingsGame.set("contrast", Double.parseDouble(menuLables[pos]));
             game.setScreen(menu);
         }
     }
