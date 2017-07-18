@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ResolutionScreen implements Screen {
+public class SettingsVideoScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
@@ -27,7 +27,6 @@ public class ResolutionScreen implements Screen {
     private GlyphLayout glyphLayout;
     private Properties prop;
     private Texture selectedImage;
-    private Rectangle selectedRect;
     private Rectangle labelPos;
 
     private int pos = 0;
@@ -43,28 +42,22 @@ public class ResolutionScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
+    private SettingsScreen menu;
     private long login;
-    private SettingsVideoScreen menu;
 
-    private int selectedX, selectedY;
-    private int selectedMarginRight;
-    private boolean there;
-
-    public ResolutionScreen(StarInvaders game, SettingsVideoScreen menu) throws IOException {
+    public SettingsVideoScreen(StarInvaders game, SettingsScreen menu) throws IOException {
         this.menu = menu;
 
-        game.log.Log("Initializing Screen Resolution select screen", LogSystem.INFO);
+        game.log.Log("Initializing settings video screen", LogSystem.INFO);
 
-
-        selectedRect = new Rectangle();
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("settings.res.label");
-        menuLables = prop.getProperty("settings.res.elements").split(";");
+        label = prop.getProperty("settings.group.video.label");
+        menuLables = prop.getProperty("settings.group.video.elements").split(";");
 
-        prop.load(new FileInputStream("properties/settings/resolution.properties"));
+        prop.load(new FileInputStream("properties/settings/settings.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -74,10 +67,6 @@ public class ResolutionScreen implements Screen {
         menuWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
         menuHeight = menuWidth;
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
-        selectedMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.2.margin.right")));
-        selectedRect.width = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
-        selectedRect.height = selectedRect.width;
-
 
         prop.load(new FileInputStream("properties/main.properties"));
         imagePath = prop.getProperty("dir.images");
@@ -108,32 +97,11 @@ public class ResolutionScreen implements Screen {
         game.batch.begin();
         game.fontMain.draw(game.batch, label, labelPos.x, labelPos.y);
 
-        int j = 0;
-        int f = (pos / 6) * 6;
-
-        for (int i = f; i < (((f + 6) > menuLables.length) ? menuLables.length: (f + 6)); i++) {
-            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (j + 1) * menuElementStep);
-            j++;
-        }
-
-        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - ((pos % 6) + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
-        if (there)
-            game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
-        game.batch.end();
-
-        int npos = 0;
-        String str = String.valueOf(game.settingsMain.get("resolution.width", 1920)) + "x" + String.valueOf(game.settingsMain.get("resolution.height", 1080));
-
         for (int i = 0; i < menuLables.length; i++)
-            if (menuLables[i].equals(str)) {
-                npos = i;
-                break;
-            }
+            game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
-        there = pos / 6 == npos / 6;
-
-        selectedX = menuLabelsX - selectedMarginRight;
-        selectedY = (int) (labelPos.y - ((npos % 6) + 1) * menuElementStep - menuMarginBottom);
+        game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
+        game.batch.end();
 
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
@@ -146,27 +114,36 @@ public class ResolutionScreen implements Screen {
             }
         }
 
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && TimeUtils.nanoTime() - login > 500000000)
+            game.setScreen(menu);
+
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-            game.setScreen(menu);
-
-        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000){
-            try {
-                String[] res = menuLables[pos].split("x");
-                game.settingsMain.set("resolution.width", Integer.parseInt(res[0]));
-                game.settingsMain.set("resolution.height", Integer.parseInt(res[1]));
-                game.setScreen(new RestartScreen(game, menu));
-            } catch (Exception e) {
-                e.printStackTrace();
-                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                Gdx.app.exit();
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
+            switch (pos) {
+                case 0:
+                    try {
+                        game.setScreen(new ResolutionScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 1:
+                    try {
+                        game.setScreen(new TextureScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
             }
-        }
     }
 
     @Override
@@ -196,7 +173,7 @@ public class ResolutionScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.log.Log("Disposing Screen Resolution select screen", LogSystem.INFO);
+        game.log.Log("Disposing results screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
@@ -204,6 +181,7 @@ public class ResolutionScreen implements Screen {
         selectedImage.dispose();
         selectedImage = null;
         labelPos = null;
+        menu = null;
     }
 
 }
