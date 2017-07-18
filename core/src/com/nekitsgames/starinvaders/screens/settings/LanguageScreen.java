@@ -45,12 +45,12 @@ public class LanguageScreen implements Screen {
     private int menuChangeLimit;
 
     private long login;
-    private SettingsScreen menu;
+    private SettingsGameScreen menu;
 
     private int selectedX, selectedY;
     private int selectedMarginRight;
 
-    public LanguageScreen(StarInvaders game, SettingsScreen menu) throws IOException {
+    public LanguageScreen(StarInvaders game, SettingsGameScreen menu) throws IOException {
         this.menu = menu;
 
         game.log.Log("Initializing settings screen", LogSystem.INFO);

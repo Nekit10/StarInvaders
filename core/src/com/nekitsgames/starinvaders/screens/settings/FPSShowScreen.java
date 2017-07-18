@@ -43,13 +43,13 @@ public class FPSShowScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private SettingsScreen menu;
+    private SettingsGameScreen menu;
     private long login;
 
     private int selectedX, selectedY;
     private int selectedMarginRight;
 
-    public FPSShowScreen(StarInvaders game, SettingsScreen menu) throws IOException {
+    public FPSShowScreen(StarInvaders game, SettingsGameScreen menu) throws IOException {
         this.menu = menu;
 
         game.log.Log("Initializing FPS Show select screen", LogSystem.INFO);

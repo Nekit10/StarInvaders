@@ -42,10 +42,10 @@ public class RestartScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private SettingsScreen menu;
+    private Screen menu;
     private long login;
 
-    public RestartScreen(StarInvaders game, SettingsScreen menu) throws IOException {
+    public RestartScreen(StarInvaders game, Screen menu) throws IOException {
         this.menu = menu;
 
         game.log.Log("Initializing restar app screen", LogSystem.INFO);

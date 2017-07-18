@@ -11,12 +11,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
+import com.nekitsgames.starinvaders.screens.MainMenuScreen;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class FPSLimitScreen implements Screen {
+public class SettingsGameScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
@@ -27,7 +28,6 @@ public class FPSLimitScreen implements Screen {
     private GlyphLayout glyphLayout;
     private Properties prop;
     private Texture selectedImage;
-    private Rectangle selectedRect;
     private Rectangle labelPos;
 
     private int pos = 0;
@@ -43,27 +43,22 @@ public class FPSLimitScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private SettingsGameScreen menu;
+    private SettingsScreen menu;
     private long login;
 
-    private int selectedX, selectedY;
-    private int selectedMarginRight;
-
-    public FPSLimitScreen(StarInvaders game, SettingsGameScreen menu) throws IOException {
+    public SettingsGameScreen(StarInvaders game, SettingsScreen menu) throws IOException {
         this.menu = menu;
 
-        game.log.Log("Initializing FPS limit select screen", LogSystem.INFO);
+        game.log.Log("Initializing settings game screen", LogSystem.INFO);
 
-
-        selectedRect = new Rectangle();
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("settings.fps.limit.label");
-        menuLables = prop.getProperty("settings.fps.limit.elements").split(";");
+        label = prop.getProperty("settings.group.game.label");
+        menuLables = prop.getProperty("settings.group.game.elements").split(";");
 
-        prop.load(new FileInputStream("properties/settings/fpsLimit.properties"));
+        prop.load(new FileInputStream("properties/settings/settings.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
         selectedTexture = prop.getProperty("menu.selected.texture");
         labelMarginTop = (int) (game.HEIGHT * Double.parseDouble(prop.getProperty("label.margin.top")));
@@ -73,9 +68,6 @@ public class FPSLimitScreen implements Screen {
         menuWidth = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
         menuHeight = menuWidth;
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
-        selectedMarginRight = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.2.margin.right")));
-        selectedRect.width = (int) (game.WIDTH * Double.parseDouble(prop.getProperty("menu.selected.width")));
-        selectedRect.height = selectedRect.width;
 
         prop.load(new FileInputStream("properties/main.properties"));
         imagePath = prop.getProperty("dir.images");
@@ -93,8 +85,6 @@ public class FPSLimitScreen implements Screen {
         labelPos.y = game.HEIGHT - labelMarginTop;
 
         menuLabelsX = (int) (game.WIDTH / 2 - glyphLayout.width / 2 + glyphLayout.width * menuLabelXAdd);
-
-        login = TimeUtils.nanoTime();
     }
 
     @Override
@@ -112,19 +102,8 @@ public class FPSLimitScreen implements Screen {
             game.fontLabel.draw(game.batch, menuLables[i], menuLabelsX, labelPos.y - (i + 1) * menuElementStep);
 
         game.batch.draw(selectedImage, menuLabelsX - menuMarginRight, labelPos.y - (pos + 1) * menuElementStep - menuMarginBottom, menuWidth, menuHeight);
-        game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = (int) game.settingsGame.get("FPS.limit", 60);
-
-        for (int i = 0; i < menuLables.length; i++)
-            if (menuLables[i].equals("" + npos)) {
-                npos = i;
-                break;
-            }
-
-        selectedX = menuLabelsX - selectedMarginRight;
-        selectedY = (int) (labelPos.y - (npos + 1) * menuElementStep - menuMarginBottom);
         if (TimeUtils.nanoTime() - lastMenuChange > menuChangeLimit) {
             if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 pos++;
@@ -136,29 +115,59 @@ public class FPSLimitScreen implements Screen {
             }
         }
 
+
+        if ((Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) && TimeUtils.nanoTime() - login > 500000000)
+            game.setScreen(menu);
+
         if (pos < 0)
             pos = 0;
         if (pos > menuLables.length - 1)
             pos = menuLables.length - 1;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-            game.setScreen(menu);
-
-        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
-            try {
-                game.settingsGame.set("FPS.limit", Integer.parseInt(menuLables[pos]));
-                game.setScreen(new RestartScreen(game, menu));
-            } catch (IOException e) {
-                e.printStackTrace();
-                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                Gdx.app.exit();
+        if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000)
+            switch (pos) {
+                case 0:
+                    try {
+                        game.setScreen(new FPSShowScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 1:
+                    try {
+                        game.setScreen(new FPSLimitScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 3:
+                    try {
+                        game.setScreen(new LanguageScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+                case 4:
+                    try {
+                        game.setScreen(new DifScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
             }
-        }
     }
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override
@@ -183,7 +192,7 @@ public class FPSLimitScreen implements Screen {
 
     @Override
     public void dispose() {
-        game.log.Log("Disposing FPS Limit select screen", LogSystem.INFO);
+        game.log.Log("Disposing results screen", LogSystem.INFO);
         game = null;
         camera = null;
         glyphLayout = null;
@@ -192,7 +201,6 @@ public class FPSLimitScreen implements Screen {
         selectedImage = null;
         labelPos = null;
         menu = null;
-
     }
 
 }

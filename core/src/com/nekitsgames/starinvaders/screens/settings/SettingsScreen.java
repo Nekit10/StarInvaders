@@ -128,43 +128,7 @@ public class SettingsScreen implements Screen {
             switch (pos) {
                 case 0:
                     try {
-                        game.setScreen(new FPSShowScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 1:
-                    try {
-                        game.setScreen(new FPSLimitScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 2:
-                    try {
-                        game.setScreen(new ResolutionScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 3:
-                    try {
-                        game.setScreen(new LanguageScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 4:
-                    try {
-                        game.setScreen(new DifScreen(game, this));
+                        game.setScreen(new SettingsGameScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);

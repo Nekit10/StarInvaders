@@ -43,13 +43,13 @@ public class DifScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private SettingsScreen menu;
+    private SettingsGameScreen menu;
     private long login;
 
     private int selectedX, selectedY;
     private int selectedMarginRight;
 
-    public DifScreen(StarInvaders game, SettingsScreen menu) throws IOException {
+    public DifScreen(StarInvaders game, SettingsGameScreen menu) throws IOException {
         this.menu = menu;
 
         game.log.Log("Initializing difficulty level select screen", LogSystem.INFO);
