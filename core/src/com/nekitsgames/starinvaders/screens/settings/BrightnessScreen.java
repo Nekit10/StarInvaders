@@ -114,7 +114,7 @@ public class BrightnessScreen implements Screen {
         game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = (int) game.settingsGame.get("brightness", 2);
+        int npos = (int) game.settingsGame.get("brightness", 0);
 
         selectedX = menuLabelsX - selectedMarginRight;
         selectedY = (int) (labelPos.y - (npos + 1) * menuElementStep - menuMarginBottom);
