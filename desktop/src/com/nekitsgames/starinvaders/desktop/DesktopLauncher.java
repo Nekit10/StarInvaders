@@ -45,7 +45,7 @@ public class DesktopLauncher {
 			config.width = Integer.parseInt(prop.getProperty("resolution.width"));
 			config.height = Integer.parseInt(prop.getProperty("resolution.height"));
 			config.fullscreen = true;
-			config.allowSoftwareMode = true;
+			config.allowSoftwareMode = false;
 			prop.load(new FileInputStream("properties/defaults.properties"));
         set.load("game");
         config.foregroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));

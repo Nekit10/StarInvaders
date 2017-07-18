@@ -114,7 +114,19 @@ public class ContrastScreen implements Screen {
         game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = (int) game.settingsGame.get("contrast", 2);
+        int npos = 0;
+
+        try {
+            for (int i = 0; i < menuLables.length; i++) {
+                if (Float.parseFloat(menuLables[i]) == (float) game.settingsGame.get("contrast", 0f))
+                    npos = i;
+            }
+        } catch (ClassCastException e) {
+            for (int i = 0; i < menuLables.length; i++) {
+                if (Float.parseFloat(menuLables[i]) == ((Integer) game.settingsGame.get("contrast", 0f)).floatValue())
+                    npos = i;
+            }
+        }
 
         selectedX = menuLabelsX - selectedMarginRight;
         selectedY = (int) (labelPos.y - (npos + 1) * menuElementStep - menuMarginBottom);

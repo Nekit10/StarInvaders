@@ -171,7 +171,13 @@ public class MSAAScreen implements Screen {
                     game.settingsGame.set("msaa", 8);
                     break;
             }
-            game.setScreen(menu);
+            try {
+                game.setScreen(new RestartScreen(game, this));
+            } catch (IOException e) {
+                e.printStackTrace();
+                game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                Gdx.app.exit();
+            }
         }
     }
 
