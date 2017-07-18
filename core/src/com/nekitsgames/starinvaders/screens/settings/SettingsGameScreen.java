@@ -144,7 +144,7 @@ public class SettingsGameScreen implements Screen {
                         Gdx.app.exit();
                     }
                     break;
-                case 3:
+                case 2:
                     try {
                         game.setScreen(new LanguageScreen(game, this));
                     } catch (IOException e) {
@@ -153,7 +153,7 @@ public class SettingsGameScreen implements Screen {
                         Gdx.app.exit();
                     }
                     break;
-                case 4:
+                case 3:
                     try {
                         game.setScreen(new DifScreen(game, this));
                     } catch (IOException e) {
