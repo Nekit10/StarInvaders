@@ -127,7 +127,7 @@ public class SettingsVideoScreen implements Screen {
             switch (pos) {
                 case 0:
                     try {
-                        game.setScreen(new ResolutionScreen(game, this));
+                        game.setScreen(new TextureScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -136,7 +136,7 @@ public class SettingsVideoScreen implements Screen {
                     break;
                 case 1:
                     try {
-                        game.setScreen(new TextureScreen(game, this));
+                        game.setScreen(new BrightnessScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -145,7 +145,7 @@ public class SettingsVideoScreen implements Screen {
                     break;
                 case 2:
                     try {
-                        game.setScreen(new BrightnessScreen(game, this));
+                        game.setScreen(new ContrastScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -154,15 +154,6 @@ public class SettingsVideoScreen implements Screen {
                     break;
                 case 3:
                     try {
-                        game.setScreen(new ContrastScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 4:
-                    try {
                         game.setScreen(new MSAAScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -170,7 +161,7 @@ public class SettingsVideoScreen implements Screen {
                         Gdx.app.exit();
                     }
                     break;
-                case 5:
+                case 4:
                     try {
                         game.setScreen(new VSyncScreen(game, this));
                     } catch (IOException e) {

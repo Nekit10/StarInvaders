@@ -44,13 +44,13 @@ public class ResolutionScreen implements Screen {
     private int menuChangeLimit;
 
     private long login;
-    private SettingsVideoScreen menu;
+    private SettingsRenderScreen menu;
 
     private int selectedX, selectedY;
     private int selectedMarginRight;
     private boolean there;
 
-    public ResolutionScreen(StarInvaders game, SettingsVideoScreen menu) throws IOException {
+    public ResolutionScreen(StarInvaders game, SettingsRenderScreen menu) throws IOException {
         this.menu = menu;
 
         game.log.Log("Initializing Screen Resolution select screen", LogSystem.INFO);

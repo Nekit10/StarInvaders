@@ -11,13 +11,12 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
-import com.nekitsgames.starinvaders.screens.MainMenuScreen;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class SettingsScreen implements Screen {
+public class SettingsRenderScreen implements Screen {
 
     private static String label;
     private static String[] menuLables;
@@ -43,20 +42,20 @@ public class SettingsScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private MainMenuScreen menu;
+    private SettingsScreen menu;
     private long login;
 
-    public SettingsScreen(StarInvaders game, MainMenuScreen menu) throws IOException {
+    public SettingsRenderScreen(StarInvaders game, SettingsScreen menu) throws IOException {
         this.menu = menu;
 
-        game.log.Log("Initializing settings screen", LogSystem.INFO);
+        game.log.Log("Initializing settings video screen", LogSystem.INFO);
 
 
         prop = new Properties();
         prop.load(new FileInputStream("properties/strings." + game.settingsMain.get("lang", "us") + ".properties"));
 
-        label = prop.getProperty("settings.label");
-        menuLables = prop.getProperty("settings.elements").split(";");
+        label = prop.getProperty("settings.group.render.label");
+        menuLables = prop.getProperty("settings.group.render.elements").split(";");
 
         prop.load(new FileInputStream("properties/settings/settings.properties"));
         menuLabelXAdd = Double.parseDouble(prop.getProperty("menu.elements.position.x"));
@@ -128,7 +127,7 @@ public class SettingsScreen implements Screen {
             switch (pos) {
                 case 0:
                     try {
-                        game.setScreen(new SettingsGameScreen(game, this));
+                        game.setScreen(new ResolutionScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
@@ -137,16 +136,7 @@ public class SettingsScreen implements Screen {
                     break;
                 case 1:
                     try {
-                        game.setScreen(new SettingsVideoScreen(game, this));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
-                        Gdx.app.exit();
-                    }
-                    break;
-                case 2:
-                    try {
-                        game.setScreen(new SettingsRenderScreen(game, this));
+                        game.setScreen(new GLScreen(game, this));
                     } catch (IOException e) {
                         e.printStackTrace();
                         game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
