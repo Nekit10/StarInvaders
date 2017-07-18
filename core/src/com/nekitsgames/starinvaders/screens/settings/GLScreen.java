@@ -52,7 +52,7 @@ public class GLScreen implements Screen {
     public GLScreen(StarInvaders game, SettingsRenderScreen menu) throws IOException {
         this.menu = menu;
 
-        game.log.Log("Initializing vSync screen", LogSystem.INFO);
+        game.log.Log("Initializing OpenGL screen", LogSystem.INFO);
 
         selectedRect = new Rectangle();
 
