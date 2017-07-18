@@ -135,6 +135,15 @@ public class SettingsScreen implements Screen {
                         Gdx.app.exit();
                     }
                     break;
+                case 1:
+                    try {
+                        game.setScreen(new SettingsVideoScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
             }
     }
 

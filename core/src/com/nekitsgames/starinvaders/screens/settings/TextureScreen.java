@@ -114,7 +114,7 @@ public class TextureScreen implements Screen {
         game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = (int) game.settingsGame.get("difficulty", 0);
+        int npos = (int) game.settingsGame.get("textures", 0);
 
         selectedX = menuLabelsX - selectedMarginRight;
         selectedY = (int) (labelPos.y - (npos + 1) * menuElementStep - menuMarginBottom);
