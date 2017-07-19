@@ -231,6 +231,11 @@ public class MainMenuScreen implements Screen {
     public void show() {
         login = TimeUtils.nanoTime();
         menuMusic.setLooping(true);
+        try {
+            menuMusic.setVolume(((Double) game.settingsGame.get("volume", 1.0)).floatValue());
+        } catch (ClassCastException e) {
+            menuMusic.setVolume(((Integer) game.settingsGame.get("volume", 1.0)).floatValue());
+        }
         menuMusic.play();
     }
 

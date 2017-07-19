@@ -104,9 +104,23 @@ public class PlayFightLocalMultiplayerScreen implements Screen {
 
         ship = (int) game.settingsGameData.get("ship", 1);
 
+        String imageQ = "high/";
+
+        switch ((int) game.settingsGame.get("textures", 0)) {
+            case 0:
+                imageQ = "high/";
+                break;
+            case 1:
+                imageQ = "medium/";
+                break;
+            case 2:
+                imageQ = "minimal/";
+                break;
+        }
+
         prop.load(new FileInputStream("properties/main.properties"));
         music_path = prop.getProperty("dir.sound");
-        image_path = prop.getProperty("dir.images");
+        image_path = prop.getProperty("dir.images") + imageQ;
         SHIP_SOUND = prop.getProperty("app.music");
 
 
@@ -158,7 +172,11 @@ public class PlayFightLocalMultiplayerScreen implements Screen {
 
         spaceSound = Gdx.audio.newMusic(Gdx.files.internal(music_path + SHIP_SOUND));
 
-        spaceSound.setLooping(true);
+        try {
+            spaceSound.setVolume(((Double) game.settingsGame.get("volume", 1.0)).floatValue());
+        } catch (ClassCastException e) {
+            spaceSound.setVolume(((Integer) game.settingsGame.get("volume", 1.0)).floatValue());
+        }        spaceSound.setLooping(true);
         spaceSound.play();
 
         shipRect = new Rectangle();

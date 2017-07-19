@@ -179,7 +179,12 @@ public class MainGameScreen implements Screen {
         shipImage = new Texture(image_path + SHIP_FILE);
 
         spaceSound = Gdx.audio.newMusic(Gdx.files.internal(music_path + SHIP_SOUND));
-
+        
+        try {
+            spaceSound.setVolume(((Double) game.settingsGame.get("volume", 1.0)).floatValue());
+        } catch (ClassCastException e) {
+            spaceSound.setVolume(((Integer) game.settingsGame.get("volume", 1.0)).floatValue());
+        }        spaceSound.setLooping(true);
         spaceSound.setLooping(true);
         spaceSound.play();
 

@@ -114,16 +114,16 @@ public class AudioVolumeScreen implements Screen {
         game.batch.draw(selectedImage, selectedX, selectedY, selectedRect.width, selectedRect.height);
         game.batch.end();
 
-        int npos = 0;
+        int npos = 5;
 
         try {
             for (int i = 0; i < menuLables.length; i++) {
-                if (Double.parseDouble(menuLables[i]) == (double) game.settingsGame.get("volume", 0f))
+                if (Double.parseDouble(menuLables[i]) == (double) game.settingsGame.get("volume", 1.0))
                     npos = i;
             }
         } catch (ClassCastException e) {
             for (int i = 0; i < menuLables.length; i++) {
-                if (Double.parseDouble(menuLables[i]) == ((Integer) game.settingsGame.get("volume", 0f)).doubleValue())
+                if (Double.parseDouble(menuLables[i]) == ((Integer) game.settingsGame.get("volume", 1.0)).doubleValue())
                     npos = i;
             }
         }

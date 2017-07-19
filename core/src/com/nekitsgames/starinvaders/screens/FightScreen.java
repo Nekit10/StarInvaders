@@ -99,8 +99,8 @@ public class FightScreen implements Screen {
         imagePath = prop.getProperty("dir.images");
         soundPath = prop.getProperty("dir.sound");
 
-        planet = new Texture(imagePath + "planet6.png");
-        planet2 = new Texture(imagePath + "planet7.png");
+        planet = new Texture(imagePath + "high/planet6.png");
+        planet2 = new Texture(imagePath + "high/planet7.png");
 
         this.game = game;
 
