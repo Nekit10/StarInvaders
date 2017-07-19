@@ -118,10 +118,24 @@ public class MainGameScreen implements Screen {
                 break;
         }
 
+        String soundQ = "high/";
+
+        switch ((int) game.settingsGame.get("audio", 0)) {
+            case 0:
+                soundQ = "high/";
+                break;
+            case 1:
+                soundQ = "medium/";
+                break;
+            case 2:
+                soundQ = "minimal/";
+                break;
+        }
+
         prop.load(new FileInputStream("properties/main.properties"));
         music_path = prop.getProperty("dir.sound");
         image_path = prop.getProperty("dir.images") + imageQ;
-        SHIP_SOUND = prop.getProperty("app.music");
+        SHIP_SOUND = prop.getProperty("app.music") + soundQ;
 
 
         prop.load(new FileInputStream("properties/ship.properties"));
@@ -179,7 +193,7 @@ public class MainGameScreen implements Screen {
         shipImage = new Texture(image_path + SHIP_FILE);
 
         spaceSound = Gdx.audio.newMusic(Gdx.files.internal(music_path + SHIP_SOUND));
-        
+
         try {
             spaceSound.setVolume(((Double) game.settingsGame.get("volume", 1.0)).floatValue());
         } catch (ClassCastException e) {

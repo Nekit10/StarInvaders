@@ -43,13 +43,13 @@ public class AudioScreen implements Screen {
     private int menuWidth;
     private int menuChangeLimit;
 
-    private SettingsVideoScreen menu;
+    private SettingsAudioScreen menu;
     private long login;
 
     private int selectedX, selectedY;
     private int selectedMarginRight;
 
-    public AudioScreen(StarInvaders game, SettingsVideoScreen menu) throws IOException {
+    public AudioScreen(StarInvaders game, SettingsAudioScreen menu) throws IOException {
         this.menu = menu;
 
         game.log.Log("Initializing texture screen", LogSystem.INFO);

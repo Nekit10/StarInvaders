@@ -96,9 +96,23 @@ public class MainMenuScreen implements Screen {
         menuHeight = menuWidth;
         menuChangeLimit = Integer.parseInt(prop.getProperty("menu.change.limit"));
 
+        String soundQ = "high/";
+
+        switch ((int) game.settingsGame.get("audio", 0)) {
+            case 0:
+                soundQ = "high/";
+                break;
+            case 1:
+                soundQ = "medium/";
+                break;
+            case 2:
+                soundQ = "minimal/";
+                break;
+        }
+
         prop.load(new FileInputStream("properties/main.properties"));
         imagePath = prop.getProperty("dir.images");
-        soundPath = prop.getProperty("dir.sound");
+        soundPath = prop.getProperty("dir.sound") + soundQ;
 
         planet = new Texture(imagePath + "/high/planet6.png");
         planet2 = new Texture(imagePath + "/high/planet7.png");
