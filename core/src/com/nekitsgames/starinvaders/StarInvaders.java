@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.nekitsgames.starinvaders.API.ShaderBatch;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.API.settingsApi.Settings2API;
 import com.nekitsgames.starinvaders.classes.Exceptions.SettingsAccessException;
@@ -31,7 +32,7 @@ public class StarInvaders extends Game {
     public static final String RUSSIAN_CHARACTERS = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЬЪЫЬЭЮЯ"
             + "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
             + FreeTypeFontGenerator.DEFAULT_CHARS;
-    public SpriteBatch batch;
+    public ShaderBatch batch;
     public BitmapFont fontMain;
     public BitmapFont fontLabel;
     public BitmapFont fontData;
@@ -94,7 +95,18 @@ public class StarInvaders extends Game {
             labelFontSize = (int) (HEIGHT * Double.parseDouble(prop.getProperty("label.font.size")));
             dataFontSize = (int) (HEIGHT * Double.parseDouble(prop.getProperty("data.font.size")));
 
-            batch = new SpriteBatch();
+            batch = new ShaderBatch(100);
+            try {
+                batch.brightness = ((Double) settingsGame.get("brightness", 0.0)).floatValue();
+            } catch (ClassCastException e) {
+                batch.brightness = (Integer) settingsGame.get("brightness", 0.0);
+            }
+
+            try {
+                batch.contrast = ((Double) settingsGame.get("contrast", 0.0)).floatValue();
+            } catch (ClassCastException e) {
+                batch.contrast = (Integer) settingsGame.get("contrast", 0.0);
+            }
 
             log.Log("Initializing fonts", LogSystem.INFO);
 

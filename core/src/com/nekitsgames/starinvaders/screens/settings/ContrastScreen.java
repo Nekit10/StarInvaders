@@ -152,6 +152,11 @@ public class ContrastScreen implements Screen {
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
             game.settingsGame.set("contrast", Double.parseDouble(menuLables[pos]));
+            try {
+                game.batch.contrast = ((Double) game.settingsGame.get("contrast", 0.0)).floatValue();
+            } catch (ClassCastException e) {
+                game.batch.contrast = (Integer) game.settingsGame.get("contrast", 0.0);
+            }
             game.setScreen(menu);
         }
     }

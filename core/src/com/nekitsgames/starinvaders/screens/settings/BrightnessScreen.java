@@ -152,6 +152,11 @@ public class BrightnessScreen implements Screen {
 
         if ((Gdx.input.isKeyPressed(Input.Keys.ENTER) || Gdx.input.isKeyPressed(Input.Keys.SPACE)) && TimeUtils.nanoTime() - login > 500000000) {
             game.settingsGame.set("brightness", Double.parseDouble(menuLables[pos]));
+            try {
+                game.batch.brightness = ((Double) game.settingsGame.get("brightness", 0.0)).floatValue();
+            } catch (ClassCastException e) {
+                game.batch.brightness = (Integer) game.settingsGame.get("brightness", 0.0);
+            }
             game.setScreen(menu);
         }
     }
