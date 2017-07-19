@@ -104,9 +104,23 @@ public class MainGameScreen implements Screen {
 
         ship = (int) game.settingsGameData.get("ship", 1);
 
+        String imageQ = "high/";
+
+        switch ((int) game.settingsGame.get("textures", 0)) {
+            case 0:
+                imageQ = "high/";
+                break;
+            case 1:
+                imageQ = "medium/";
+                break;
+            case 2:
+                imageQ = "minimal/";
+                break;
+        }
+
         prop.load(new FileInputStream("properties/main.properties"));
         music_path = prop.getProperty("dir.sound");
-        image_path = prop.getProperty("dir.images");
+        image_path = prop.getProperty("dir.images") + imageQ;
         SHIP_SOUND = prop.getProperty("app.music");
 
 
