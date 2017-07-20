@@ -10,10 +10,12 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.nekitsgames.starinvaders.API.settingsApi.Settings2API;
 import com.nekitsgames.starinvaders.StarInvaders;
 import com.nekitsgames.starinvaders.classes.Exceptions.SettingsAccessException;
+import org.lwjgl.Sys;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Scanner;
 
 /**
  * Launcher for Desktops
@@ -25,6 +27,8 @@ import java.util.Properties;
  * @since 1.0
  */
 public class DesktopLauncher {
+
+    private static final String KEY = "dgf3823j@-q2349563sjodfh37289545";
 
 	/**
 	 * Launcher for Desktops
@@ -39,6 +43,18 @@ public class DesktopLauncher {
         Properties prop = new Properties();
         Settings2API set = new Settings2API();
         set.load("game");
+        if (!((set.get("key", " ")).equals(KEY))) {
+            System.out.print("Hello. this is closed beta test. Enter your beta key: ");
+            Scanner s = new Scanner(System.in);
+            String key = s.nextLine();
+            if (key.equals(KEY)) {
+                System.out.println("You entered valid key. Starting game...");
+                set.set("key", KEY);
+            } else {
+                System.out.print("Your entered invalid key!");
+                System.exit(-1);
+            }
+        }
         prop.load(new FileInputStream("properties/main.properties"));
 			LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 			config.title = prop.getProperty("app.name") + prop.getProperty("app.version");
@@ -52,6 +68,7 @@ public class DesktopLauncher {
 			prop.load(new FileInputStream("properties/defaults.properties"));
         config.foregroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));
         config.backgroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));
+        set.save();
         new LwjglApplication(new StarInvaders(), config);
 	}
 
