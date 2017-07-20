@@ -14,6 +14,9 @@ import org.lwjgl.Sys;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
 import java.util.Scanner;
 
@@ -28,7 +31,32 @@ import java.util.Scanner;
  */
 public class DesktopLauncher {
 
-    private static final String KEY = "dgf3823j@-q2349563sjodfh37289545";
+    public static String md5Custom(String st) {
+        MessageDigest messageDigest = null;
+        byte[] digest = new byte[0];
+
+        try {
+            messageDigest = MessageDigest.getInstance("MD5");
+            messageDigest.reset();
+            messageDigest.update(st.getBytes());
+            digest = messageDigest.digest();
+        } catch (NoSuchAlgorithmException e) {
+            // тут можно обработать ошибку
+            // возникает она если в передаваемый алгоритм в getInstance(,,,) не существует
+            e.printStackTrace();
+        }
+
+        BigInteger bigInt = new BigInteger(1, digest);
+        String md5Hex = bigInt.toString(16);
+
+        while( md5Hex.length() < 32 ){
+            md5Hex = "0" + md5Hex;
+        }
+
+        return md5Hex;
+    }
+
+    private static final String KEY = "0a5489b8dd7caaa0874a432c1542668d";
 
 	/**
 	 * Launcher for Desktops
@@ -47,6 +75,7 @@ public class DesktopLauncher {
             System.out.print("Hello. this is closed beta test. Enter your beta key: ");
             Scanner s = new Scanner(System.in);
             String key = s.nextLine();
+            key = md5Custom(key);
             if (key.equals(KEY)) {
                 System.out.println("You entered valid key. Starting game...");
                 set.set("key", KEY);
