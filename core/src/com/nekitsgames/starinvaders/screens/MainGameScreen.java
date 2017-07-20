@@ -147,7 +147,7 @@ public class MainGameScreen implements Screen {
         SHIP_FILE = prop.getProperty("ship." + ship +  ".texture");
         lazer_texture = prop.getProperty("ship." + ship + ".lazer");
 
-        ship_armour = (int) game.settingsGameData.get("armour.percent", 0);
+        ship_armour = (int) game.settingsGameData.get("armour", 0);
 
         prop.load(new FileInputStream("properties/amunition.properties"));
         amunition_count = Integer.parseInt(prop.getProperty("amunition.count"));
@@ -412,7 +412,7 @@ public class MainGameScreen implements Screen {
                 if (astr.getRect().y < 0 - astr.getType().getHeight())
                     indexes.add(asteroids.indexOf(astr));
                 if (astr.getRect().overlaps(shipRect)) {
-                    hp -= astr.getType().getDamage() * (100 - ship_armour / 3) / 100;
+                    hp -= astr.getType().getDamage() * (100 - ship_armour * 10) / 100;
                     indexes.add(asteroids.indexOf(astr));
                 }
             }

@@ -18,6 +18,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.StarInvaders;
+import com.nekitsgames.starinvaders.screens.settings.ArmourScreen;
 import com.nekitsgames.starinvaders.screens.settings.SettingsScreen;
 import com.nekitsgames.starinvaders.screens.settings.ShipScreen;
 
@@ -231,6 +232,16 @@ public class MainMenuScreen implements Screen {
                     break;
 
                 case 4:
+                    try {
+                        game.setScreen(new ArmourScreen(game, this));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        game.log.Log("Error: " + e.getMessage(), LogSystem.ERROR);
+                        Gdx.app.exit();
+                    }
+                    break;
+
+                case 5:
                     Gdx.app.exit();
                     break;
             }
