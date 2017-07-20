@@ -14,6 +14,7 @@ import com.nekitsgames.starinvaders.API.ShaderBatch;
 import com.nekitsgames.starinvaders.API.logAPI.LogSystem;
 import com.nekitsgames.starinvaders.API.settingsApi.Settings2API;
 import com.nekitsgames.starinvaders.classes.Exceptions.SettingsAccessException;
+import com.nekitsgames.starinvaders.screens.CopyrightScreen;
 import com.nekitsgames.starinvaders.screens.MainMenuScreen;
 
 import java.io.FileInputStream;
@@ -103,9 +104,9 @@ public class StarInvaders extends Game {
             }
 
             try {
-                batch.contrast = ((Double) settingsGame.get("contrast", 0.0)).floatValue();
+                batch.contrast = ((Double) settingsGame.get("contrast", 1.0)).floatValue();
             } catch (ClassCastException e) {
-                batch.contrast = (Integer) settingsGame.get("contrast", 0.0);
+                batch.contrast = (Integer) settingsGame.get("contrast", 1.0);
             }
 
             log.Log("Initializing fonts", LogSystem.INFO);
@@ -135,7 +136,7 @@ public class StarInvaders extends Game {
             generator.dispose(); // don't forget to dispose to avoid memory leaks!
 
             Gdx.input.setCursorCatched(true);
-            this.setScreen(new MainMenuScreen(this));
+            this.setScreen(new CopyrightScreen(this));
         } catch (Exception e) {
             e.printStackTrace();
             log.Log("Error: " + e.getMessage(), LogSystem.FATAL);

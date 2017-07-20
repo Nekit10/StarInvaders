@@ -152,7 +152,7 @@ public class GLScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override

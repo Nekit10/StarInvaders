@@ -148,7 +148,7 @@ public class FPSShowScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override

@@ -149,7 +149,7 @@ public class ShipScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override

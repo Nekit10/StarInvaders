@@ -14,6 +14,7 @@ import com.nekitsgames.starinvaders.StarInvaders;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Time;
 import java.util.Properties;
 
 public class AudioScreen implements Screen {
@@ -146,7 +147,7 @@ public class AudioScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override

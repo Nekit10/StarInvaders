@@ -45,10 +45,10 @@ public class DesktopLauncher {
 			config.width = Integer.parseInt(prop.getProperty("resolution.width"));
 			config.height = Integer.parseInt(prop.getProperty("resolution.height"));
 			config.fullscreen = true;
-			config.samples = (int) set.get("msaa", 1);
-			config.useGL30 = (int) set.get("gl", 0) == 1;
-			config.allowSoftwareMode = (boolean) set.get("smode", false);
-			config.vSyncEnabled = (boolean) set.get("vsync", false);
+			config.samples = (Integer) set.get("msaa", 1);
+			config.useGL30 = (Integer) set.get("gl", 0) == 1;
+			config.allowSoftwareMode = (Boolean) set.get("smode", false);
+			config.vSyncEnabled = (Boolean) set.get("vsync", false);
 			prop.load(new FileInputStream("properties/defaults.properties"));
         config.foregroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));
         config.backgroundFPS = (Integer) set.get("FPS.limit", Integer.parseInt(prop.getProperty("settings.FPS.limit")));

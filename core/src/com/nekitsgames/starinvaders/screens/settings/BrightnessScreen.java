@@ -118,12 +118,12 @@ public class BrightnessScreen implements Screen {
 
         try {
             for (int i = 0; i < menuLables.length; i++) {
-                if (Double.parseDouble(menuLables[i]) == (double) game.settingsGame.get("brightness", 0f))
+                if (Double.parseDouble(menuLables[i]) == (double) game.settingsGame.get("brightness", 0.0))
                     npos = i;
             }
         } catch (ClassCastException e) {
             for (int i = 0; i < menuLables.length; i++) {
-                if (Double.parseDouble(menuLables[i]) == ((Integer) game.settingsGame.get("brightness", 0f)).doubleValue())
+                if (Double.parseDouble(menuLables[i]) == ((Integer) game.settingsGame.get("brightness", 0.0)).doubleValue())
                     npos = i;
             }
         }
@@ -163,7 +163,7 @@ public class BrightnessScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override

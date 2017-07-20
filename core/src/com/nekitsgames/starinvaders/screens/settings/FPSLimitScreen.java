@@ -158,7 +158,7 @@ public class FPSLimitScreen implements Screen {
 
     @Override
     public void show() {
-
+        login = TimeUtils.nanoTime();
     }
 
     @Override

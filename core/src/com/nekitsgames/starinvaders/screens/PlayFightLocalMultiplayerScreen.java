@@ -133,9 +133,9 @@ public class PlayFightLocalMultiplayerScreen implements Screen {
         }
 
         prop.load(new FileInputStream("properties/main.properties"));
-        music_path = prop.getProperty("dir.sound");
+        music_path = prop.getProperty("dir.sound") + soundQ;
         image_path = prop.getProperty("dir.images") + imageQ;
-        SHIP_SOUND = prop.getProperty("app.music") + soundQ;
+        SHIP_SOUND = prop.getProperty("app.music");
 
 
         prop.load(new FileInputStream("properties/ship.properties"));
