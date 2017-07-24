@@ -1,28 +1,14 @@
 # StarInvaders
-Star Invaders - простая игра. Я делаю Star Invaders как практику по работе с движком LibGDX. Игра распростроняется
-под лицензией GNU GPL v3. Вы можете изменять и распростронять игру, но обязаны сохронить copyright предыдущих авторов (в том числе и меня)
-и не имеете право закрыть исходные коды, они все равно должны бесплатно распростроняться со всеми изменениями согластно лицензии GPL. Для 
-создания игры используется LibGDX и IDE Intellij Idea.
+Star Invaders is a simple game about space. Gameplay is very simple but interesting. You are a man, who trying to save the Earth.
 
-# Контакты
-Если вы хотите связаться со мной (Никита Серба), вы можете написать мне на email nikitaserba@gmail.com.
+# Contacts
+Nikita Serba (project leader) - nikitaserba@iclolud.com
 
-# Авторы
+# Authors
 
-Гейм Дизайенр: Никита Серба
-
-Программист: Никита Серба
-
-Дизайнер: Никита Серба
-
-Права на движок LibGDX принадлижат Bad Login Games
-
-Права на исходный код принадлежат мне (Никита Серба)
-
-Права на музыку принадлежат DL-Sounds (https://www.dl-sounds.com/)
-
-Права на звуки FreeSFX (http://www.freesfx.co.uk/)
-
-Изображения взыты с сайта OpenGameArt (http://opengameart.org/users/wuhu)
-
-Права на шрифты принадлежат http://www.1001fonts.com/
+Project leader: Nikita Serba
+Game designer: Nikita Serba
+Level designer: Nikita Serba
+Programmer: Nikita Serba
+Translation: Nikita Serba (U.S. English, English, Russian, Ukranian)
+Testors: Nikita Serba, Pasha Frolov
