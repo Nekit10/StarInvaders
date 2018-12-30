@@ -33,7 +33,7 @@ public class Settings2API {
      * @throws AccessDeniedException if can't write to settings file
      * @throws FileNotFoundException if can't find file
      */
-    public void load (String fileName) throws SettingsAccessException, AccessDeniedException, FileNotFoundException {
+    public void load (String fileName) throws SettingsAccessException, IOException {
         if (fileName.isEmpty())
             throw new NullPointerException("File name can't be empty");
 
@@ -48,7 +48,7 @@ public class Settings2API {
         }
 
         if (settingsFile.exists() && !settingsFile.canWrite())
-            throw  new AccessDeniedException(file);
+            throw  new IOException(file);
 
         try {
             if (settingsFile.exists()) {
