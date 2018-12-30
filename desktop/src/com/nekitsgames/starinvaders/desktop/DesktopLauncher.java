@@ -56,7 +56,7 @@ public class DesktopLauncher {
         return md5Hex;
     }
 
-    private static final String KEY = "0a5489b8dd7caaa0874a432c1542668d";
+    private static final String KEY = "e312f97923ce0985cc30855b15d8318c";
 
 	/**
 	 * Launcher for Desktops
